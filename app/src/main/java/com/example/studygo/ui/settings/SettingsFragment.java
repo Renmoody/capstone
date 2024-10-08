@@ -1,10 +1,10 @@
-package com.example.studygo;
+package com.example.studygo.ui.settings;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
+
+import com.example.studygo.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 

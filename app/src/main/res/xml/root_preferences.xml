@@ -1,7 +1,4 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-    <com.example.preferencefragmentsample.ImageViewPreference
-        app:key="image_preference"
-        app:layout="@layout/custom_layout" />
 
     <EditTextPreference
             app:key="username"
