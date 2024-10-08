@@ -11,7 +11,7 @@
             />
         <SwitchPreferenceCompat
             app:key="toggle_notifications"
-            app:title="@string/title_notifications" />
+            app:title="@string/preference_notifications" />
         <SwitchPreferenceCompat
             app:key="dark_theme"
             app:summaryOff="@string/Switch_to_dark_theme"
