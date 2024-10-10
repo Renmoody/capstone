@@ -32,4 +32,6 @@
     <string name="login_to_continue">Login to continue</string>
     <string name="email">Email</string>
     <string name="sign_in">Sign In</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="add_image">Add Image</string>
 </resources>
