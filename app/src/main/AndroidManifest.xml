@@ -12,16 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StudyGo"
         tools:targetApi="31">
-        <activity
-            android:name=".MainActivity"
+        <activity android:name=".ui.signUpLogIn.LogIn"
             android:exported="true"
-            android:label="@string/app_name">
+            android:windowSoftInputMode="adjustResize">
+
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
+
+        <activity android:name=".ui.signUpLogIn.SignUp"
+            android:windowSoftInputMode="adjustResize"/>
+
+        <activity android:name=".MainActivity"/>
     </application>
 
 </manifest>

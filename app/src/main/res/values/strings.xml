@@ -28,4 +28,8 @@
 <!-- String testing for scroll view -->
     <string name="scroll_view_text">In the heart of a bustling city, where the sounds of traffic and the chatter of pedestrians blend into a vibrant symphony, lies a small park that serves as an oasis amidst the urban chaos. Here, towering oak trees provide a canopy of green, their leaves rustling gently in the breeze, creating a serene backdrop for the many visitors who seek refuge from the relentless pace of city life. Families gather for picnics on the grass, laughter echoing as children chase each other with boundless energy, their joy infectious. Nearby, an elderly couple sits on a weathered bench, sharing stories of their youth, their hands intertwined, a testament to decades of companionship. Artists, inspired by the park\'s beauty, set up their easels to capture the play of light and shadow on the vibrant flowers that bloom in every corner, while joggers pass by, their rhythmic footsteps creating a steady beat against the path. As the sun begins to set, casting a golden glow over the scene, the park transforms into a magical space where the worries of the world fade away, if only for a moment, allowing everyone to connect with nature and with one another, reminding us of the simple joys that can be found in the most unexpected places.</string>
     <string name="preference_notifications">Notifications</string>
+    <string name="welcome">Welcome!</string>
+    <string name="login_to_continue">Login to continue</string>
+    <string name="email">Email</string>
+    <string name="sign_in">Sign In</string>
 </resources>

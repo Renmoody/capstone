@@ -47,4 +47,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Scalable size unit (Support for different screen sizes)
+    implementation(libs.sdp.android)
+    implementation(libs.ssp.android)
+
+    // Rounded image view
+    implementation(libs.roundedimageview)
 }
