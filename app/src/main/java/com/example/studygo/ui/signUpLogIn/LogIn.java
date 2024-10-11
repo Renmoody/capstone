@@ -10,6 +10,7 @@ import com.example.studygo.Authentication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.studygo.MainActivity;
 import com.example.studygo.databinding.LogInBinding;
 
 public class LogIn extends AppCompatActivity {
@@ -30,11 +31,11 @@ public class LogIn extends AppCompatActivity {
             String username = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
 
-            Authentication.login(username, password, new Authentication.AuthListener() {
+            auth.login(username, password, new Authentication.AuthListener() {
                 @Override
                 public void onSuccess(String message) {
                     Toast.makeText(LogIn.this, message, Toast.LENGTH_SHORT).show();
-                    // Handle successful login (e.g., start a new activity)
+                    startActivity(new Intent(LogIn.this, MainActivity.class));
                 }
 
                 @Override
