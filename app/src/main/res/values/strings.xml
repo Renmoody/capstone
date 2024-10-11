@@ -34,4 +34,8 @@
     <string name="sign_in">Sign In</string>
     <string name="create_new_account">Create New Account</string>
     <string name="add_image">Add Image</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account_login">Already Have an Account? Login</string>
 </resources>
