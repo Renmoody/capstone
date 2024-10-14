@@ -3,7 +3,8 @@
     <EditTextPreference
             app:key="username"
             app:title="@string/Username"
-            app:useSimpleSummaryProvider="false" />
+            app:useSimpleSummaryProvider="false"
+        />
         <EditTextPreference
             app:key="password"
             app:title="@string/Password"
