@@ -48,6 +48,9 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    // Adding mySQL dependency
+    implementation(libs.mysql.connector.java)
+
     // Scalable size unit (Support for different screen sizes)
     implementation(libs.sdp.android)
     implementation(libs.ssp.android)
