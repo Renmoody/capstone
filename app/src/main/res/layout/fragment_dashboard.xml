@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="0dp"
     tools:context=".ui.dashboard.DashboardFragment"
-    android:background="@color/primary">
-<LinearLayout
+    android:background="@color/primary"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:gravity="center_horizontal">
+
 
     <TextView
         android:id="@+id/calendarText"
         android:layout_marginTop="@dimen/_16sdp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Upcoming Events"
+        android:text="@string/upcoming_events"
         android:textColor="@color/white"
         android:textSize="@dimen/_20ssp"
         android:textStyle="bold"/>
@@ -28,14 +26,15 @@
         android:layout_marginTop="@dimen/_16sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/input_background"
+        android:textColor="@color/white"
         />
-    <ExpandableListView
+
+    <ListView
         android:id="@+id/listOfEvents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_16sdp"
-
+        android:textColor="@color/white"
         />
+
+
 </LinearLayout>
-</ScrollView>

@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        app:key="username"
+        app:title="@string/Username"
+        app:useSimpleSummaryProvider="false"
+        />
+    <EditTextPreference
+        app:key="password"
+        app:title="@string/Password"
+        app:useSimpleSummaryProvider="false"
+        />
+    <SwitchPreferenceCompat
+        app:key="toggle_notifications"
+        app:title="@string/preference_notifications" />
+    <SwitchPreferenceCompat
+        app:key="dark_theme"
+        app:summaryOff="@string/Switch_to_dark_theme"
+        app:summaryOn="@string/Switch_to_light_theme"
+        app:title="@string/Theme" />
+</PreferenceScreen>

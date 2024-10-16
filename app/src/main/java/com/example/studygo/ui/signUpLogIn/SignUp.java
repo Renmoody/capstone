@@ -87,7 +87,7 @@ public class SignUp extends AppCompatActivity {
         executor.execute(() -> {
             String result = null;
             try {
-                URL url = new URL("https://srv1619-files.hstgr.io/087fd1470ba22df8/files/public_html/SignUpRemote.php"); // Adjust your URL here
+                URL url = new URL("https://srv1619-files.hstgr.io/089686ec3536b70d/files/public_html/SignUpRemote.php"); // Adjust your URL here
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
