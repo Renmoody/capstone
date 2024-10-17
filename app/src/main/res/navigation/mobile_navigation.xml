@@ -26,7 +26,6 @@
         android:id="@+id/navigation_settings"
         android:name="com.example.studygo.ui.settings.SettingsFragment"
         android:label="@string/Settings"
-        tools:layout="@layout/"
         />
 
 </navigation>

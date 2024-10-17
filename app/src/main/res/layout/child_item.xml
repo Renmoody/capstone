@@ -2,20 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/primary"
+    android:orientation="vertical">
+
 
     <TextView
-        android:id="@+id/child_event_name"
+        android:id="@+id/child_event_date"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:text="@string/date"
         android:textColor="@android:color/white"
-        android:textSize="16sp" />
+        android:textSize="@dimen/_16ssp"
+        android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/child_event_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/event_name"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
+
 
     <TextView
         android:id="@+id/child_event_details"
         android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/event_details"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp" />
+        android:textSize="@dimen/_14ssp" />
 </LinearLayout>

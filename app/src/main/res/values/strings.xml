@@ -39,4 +39,7 @@
     <string name="sign_up">Sign Up</string>
     <string name="already_have_an_account_login">Already Have an Account? Login</string>
     <string name="upcoming_events">Upcoming Events</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_details">Event details</string>
+    <string name="date">Date</string>
 </resources>
