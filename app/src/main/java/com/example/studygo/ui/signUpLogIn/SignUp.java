@@ -48,15 +48,15 @@ public class SignUp extends AppCompatActivity {
             String password = binding.inputConfirmPassword.getText().toString().trim();
 
             // Basic validation
-            if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
-                Toast.makeText(SignUp.this, "All fields are required", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            // Email validation
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(SignUp.this, "Invalid email format", Toast.LENGTH_SHORT).show();
-                return;
-            }
+//            if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+//                Toast.makeText(SignUp.this, "All fields are required", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//            // Email validation
+//            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//                Toast.makeText(SignUp.this, "Invalid email format", Toast.LENGTH_SHORT).show();
+//                return;
+//            }
 
             register(username, password, email, new SignupListener() {
                 @Override
