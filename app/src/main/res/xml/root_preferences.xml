@@ -1,21 +1,29 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
-
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="User Options">
     <EditTextPreference
-            app:key="username"
-            app:title="@string/Username"
-            app:useSimpleSummaryProvider="false"
+        app:key="username"
+        app:title="@string/Username"
+        app:defaultValue="@string/Username"
+        app:useSimpleSummaryProvider="true"
         />
-        <EditTextPreference
-            app:key="password"
-            app:title="@string/Password"
-            app:useSimpleSummaryProvider="false"
-            />
-        <SwitchPreferenceCompat
-            app:key="toggle_notifications"
-            app:title="@string/preference_notifications" />
-        <SwitchPreferenceCompat
-            app:key="dark_theme"
-            app:summaryOff="@string/Switch_to_dark_theme"
-            app:summaryOn="@string/Switch_to_light_theme"
-            app:title="@string/Theme" />
+    <EditTextPreference
+        app:key="password"
+        app:title="@string/Password"
+        app:shouldDisableView="true"
+        android:defaultValue="@string/Password"
+        app:useSimpleSummaryProvider="true"
+        />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Preference Options">
+    <SwitchPreferenceCompat
+        app:key="toggle_notifications"
+        app:summary="Enable Notifications"
+        app:title="@string/preference_notifications" />
+    <SwitchPreferenceCompat
+        app:key="dark_theme"
+        app:summaryOff="@string/Switch_to_dark_theme"
+        app:summaryOn="@string/Switch_to_light_theme"
+        app:title="@string/Theme" />
+    </PreferenceCategory>
 </PreferenceScreen>

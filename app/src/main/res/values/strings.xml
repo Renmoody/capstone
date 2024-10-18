@@ -42,4 +42,5 @@
     <string name="event_name">Event Name</string>
     <string name="event_details">Event details</string>
     <string name="date">Date</string>
+    <string name="time">Time</string>
 </resources>

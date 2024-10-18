@@ -1,15 +1,16 @@
 package com.example.studygo.ui.dashboard;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.util.GregorianCalendar;
 
 public class Event {
-    private final long eventDate;
-    private final Time eventTime;
+    private final Long eventDate;
+    private final String eventTime;
     private final String eventName;
     private final String eventDetails;
 
-    public Event(String eventName, String eventDetails, long eventDate, Time  eventTime) {
+    public Event(String eventName, String eventDetails, Long eventDate, String  eventTime) {
         this.eventName = eventName;
         this.eventDetails = eventDetails;
         this.eventDate = eventDate;
@@ -24,11 +25,11 @@ public class Event {
         return eventDetails;
     }
 
-    public long getEventDate() {
+    public Long getEventDate() {
         return eventDate;
     }
 
-    public Time getEventTime() {
+    public String getEventTime() {
         return eventTime;
     }
 }

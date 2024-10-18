@@ -19,9 +19,9 @@
 
     <fragment
         android:id="@+id/navigation_messages"
-        android:name="com.example.studygo.ui.notifications.NotificationsFragment"
+        android:name="com.example.studygo.ui.messages.MessagesFragment"
         android:label="@string/title_messages"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_messages" />
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.studygo.ui.settings.SettingsFragment"

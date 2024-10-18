@@ -27,8 +27,8 @@
         android:layout_marginTop="@dimen/_16sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:selectedWeekBackgroundColor="@color/white"
+        android:weekDayTextAppearance="@style/CustomCalendarDateTextAppearance"
+        android:dateTextAppearance="@style/CustomCalendarDateTextAppearance"
         />
 
     <ListView

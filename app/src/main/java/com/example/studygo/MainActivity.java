@@ -1,9 +1,14 @@
 package com.example.studygo;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -12,17 +17,22 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.studygo.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
 
-    private ActivityMainBinding binding; // Declare binding as a field
+    private String TAG = "Preference Change";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Inflate the binding
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        // Declare binding as a field
+        com.example.studygo.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Setting up shared preferences
+        SharedPreferences settings = getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_PRIVATE);
+        settings.registerOnSharedPreferenceChangeListener(this);
 
         // Set up the bottom navigation view
         BottomNavigationView navView = binding.navView; // Use the binding
@@ -43,5 +53,10 @@ public class MainActivity extends AppCompatActivity {
         // Allow the action bar to handle up navigation
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         return navController.navigateUp() || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String s) {
+        Log.d(TAG, "onSharedPreferenceChanged: Preference "+s+" changed!");
     }
 }

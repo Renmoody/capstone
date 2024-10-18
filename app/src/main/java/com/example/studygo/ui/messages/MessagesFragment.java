@@ -1,27 +1,27 @@
-package com.example.studygo.ui.notifications;
+package com.example.studygo.ui.messages;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.studygo.databinding.FragmentNotificationsBinding;
+import com.example.studygo.databinding.FragmentMessagesBinding;
 
-public class NotificationsFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+public class MessagesFragment extends Fragment {
+
+    private FragmentMessagesBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        MessagesViewModel messagesViewModel =
+                new ViewModelProvider(this).get(MessagesViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentMessagesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         return root;

@@ -23,9 +23,12 @@ import com.example.studygo.databinding.FragmentDashboardBinding;
 import org.w3c.dom.Text;
 
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class DashboardFragment extends Fragment {
 
@@ -57,13 +60,23 @@ public class DashboardFragment extends Fragment {
 
                 Event event = getItem(position);
                 if (event != null) {
+                    TextView eventDateView = convertView.findViewById(R.id.child_event_date);
+                    TextView eventTimeView = convertView.findViewById(R.id.child_event_time);
                     TextView eventNameTextView = convertView.findViewById(R.id.child_event_name);
                     TextView eventDetailsTextView = convertView.findViewById(R.id.child_event_details);
-                    TextView eventDateView = convertView.findViewById(R.id.child_event_date);
 
+
+                    Date date = new Date(event.getEventDate());
+                    // Create a SimpleDateFormat instance with the desired format (MM/dd/yyyy)
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+                    String formattedDate = dateFormat.format(date);
+
+                    // Update UI
+                    eventDateView.setText(formattedDate);
+                    eventTimeView.setText(event.getEventTime());
                     eventNameTextView.setText(event.getEventName());
                     eventDetailsTextView.setText(event.getEventDetails());
-                    eventDateView.setText(Long.toString(event.getEventDate()));
+
                 }
 
                 return convertView;
@@ -96,6 +109,10 @@ public class DashboardFragment extends Fragment {
         LinearLayout layout = new LinearLayout(requireContext());
         layout.setOrientation(LinearLayout.VERTICAL);
 
+        final EditText eventTimeInput = new EditText(requireContext());
+        eventTimeInput.setHint("Event Time");
+        layout.addView(eventTimeInput);
+
         final EditText eventNameInput = new EditText(requireContext());
         eventNameInput.setHint("Event Name");
         layout.addView(eventNameInput);
@@ -104,14 +121,15 @@ public class DashboardFragment extends Fragment {
         eventDetailsInput.setHint("Event Details");
         layout.addView(eventDetailsInput);
 
+
         builder.setView(layout);
 
         // Add action buttons
         builder.setPositiveButton("Register Event", (dialog, which) -> {
             String eventName = eventNameInput.getText().toString();
             String eventDetails = eventDetailsInput.getText().toString();
-            long eventDate = new GregorianCalendar(year, month, day).getTimeInMillis();
-            Time eventTime = new Time(0, 0, 0);
+            Long eventDate = new GregorianCalendar(year, month, day).getTimeInMillis();
+            String eventTime = eventTimeInput.getText().toString();
             Event event = new Event(eventName, eventDetails, eventDate, eventTime);
 
             dashboardViewModel.addEvent(event);  // Add event to ViewModel
