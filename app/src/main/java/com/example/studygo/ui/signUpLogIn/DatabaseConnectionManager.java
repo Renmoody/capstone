@@ -1,58 +1,63 @@
 package com.example.studygo.ui.signUpLogIn;
-import android.widget.Toast;
 
-import com.google.android.material.tabs.TabLayout;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.Session;
 
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Properties;
 
 public class DatabaseConnectionManager {
+    private Session session;
 
-    private ExecutorService executorService;
-
-    public DatabaseConnectionManager() {
-        executorService = Executors.newSingleThreadExecutor(); // Creates a single thread executor
+    // Interface to handle connection success or failure
+    public interface ConnectCallback {
+        void onSuccess(Connection connection);
+        void onFailure(Exception e);
     }
 
-    public void connectToDatabase() {
-        executorService.submit(() -> {
-            String url = "jdbc:mysql://srv1619.hstgr.io:3306/u511097224_StudyGo?connectTimeout=10000&socketTimeout=10000";
-            String user = "u511097224_admin";
-            String pass = "Studium3!7";
-
+    public void connectViaSSH(String sshUser, String sshHost, int sshPort, String privateKey, String remoteHost, int localPort, int remotePort, String dbUser, String dbPassword, String databaseName, ConnectCallback callback) {
+        new Thread(() -> {
             try {
-                System.out.println("About to connect...");
+                JSch jsch = new JSch();
+                jsch.addIdentity(privateKey);
 
-                // Print before attempting connection
-                System.out.println("Before DriverManager.getConnection()");
+                session = jsch.getSession(sshUser, sshHost, sshPort);
 
-                // Establish connection using DriverManager
-                DriverManager.setLoginTimeout(10);
-                Connection connect = DriverManager.getConnection(url, user, pass);
+                // Optional: Set strict host key checking to no
+                Properties config = new Properties();
+                config.put("StrictHostKeyChecking", "no");
+                session.setConfig(config);
 
-                // Print after connection is successful
-                System.out.println("Connected to the database successfully!");
+                // Connect to SSH
+                session.connect();
 
-                // Use the connection as needed
-                connect.close();
-                System.out.println("Connection closed successfully!");
+                // Setup port forwarding
+                session.setPortForwardingL(localPort, remoteHost, remotePort);
+                System.out.println("SSH Tunnel established on localhost:" + localPort);
 
-            } catch (SQLException e) {
-                System.out.println("SQLException: " + e.getMessage());
-                e.printStackTrace(); // Log the error
+                // Now connect to the database through the SSH tunnel
+                String url = "jdbc:mysql://localhost:" + localPort + "/" + databaseName;
+                Class.forName("com.mysql.cj.jdbc.Driver"); // Load MySQL driver
+                Connection connection = DriverManager.getConnection(url, dbUser, dbPassword);
+
+                System.out.println("Connected to the database!");
+
+                // Notify the callback on success
+                callback.onSuccess(connection);
             } catch (Exception e) {
-                System.out.println("General exception: " + e.getMessage());
                 e.printStackTrace();
+                // Notify the callback on failure
+                callback.onFailure(e);
             }
-        });
+        }).start();
     }
 
-    public void shutdown() {
-        executorService.shutdown(); // Shut down the executor when done
+    public void disconnect() {
+        if (session != null && session.isConnected()) {
+            session.disconnect();
+            System.out.println("SSH session disconnected.");
+        }
     }
 }
-

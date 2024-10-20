@@ -57,4 +57,7 @@ dependencies {
 
     // Rounded image view
     implementation(libs.roundedimageview)
+    // Added implementation for JSCH
+    implementation (libs.jsch)
+
 }
