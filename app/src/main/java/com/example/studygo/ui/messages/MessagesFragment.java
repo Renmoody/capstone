@@ -23,7 +23,7 @@ public class MessagesFragment extends Fragment {
 
         binding = FragmentMessagesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        
+
         return root;
     }
 
