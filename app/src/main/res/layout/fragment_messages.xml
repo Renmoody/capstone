@@ -7,7 +7,7 @@
     android:animateLayoutChanges="true"
     android:background="@color/primary"
     tools:context=".ui.messages.MessagesFragment"
-    android:paddingBottom="@dimen/_25sdp">
+    android:paddingBottom="@dimen/_36sdp">
    
    <View
        android:id="@+id/viewBackground"

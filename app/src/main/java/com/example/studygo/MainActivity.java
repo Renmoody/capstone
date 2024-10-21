@@ -19,7 +19,7 @@ import com.example.studygo.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
 
-    private String TAG = "Preference Change";
+    private final String TAG = "Preference Change";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

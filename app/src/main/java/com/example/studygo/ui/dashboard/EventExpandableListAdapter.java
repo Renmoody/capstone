@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class EventExpandableListAdapter extends BaseExpandableListAdapter {
 
-    private Context context;
-    private List<String> eventTitles; // Group titles (dates)
-    private Map<String, List<Event>> eventDetailsMap; // Event details (child)
+    private final Context context;
+    private final List<String> eventTitles; // Group titles (dates)
+    private final Map<String, List<Event>> eventDetailsMap; // Event details (child)
 
     public EventExpandableListAdapter(Context context, List<String> eventTitles, Map<String, List<Event>> eventDetailsMap) {
         this.context = context;

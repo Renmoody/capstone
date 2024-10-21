@@ -31,7 +31,7 @@ public class LogIn extends AppCompatActivity {
             String username = emailEditText.getText().toString();
             String password = passwordEditText.getText().toString();
 
-            auth.login(username, password, new Authentication.AuthListener() {
+            Authentication.login(username, password, new Authentication.AuthListener() {
                 @Override
                 public void onSuccess(String message) {
                     Toast.makeText(LogIn.this, message, Toast.LENGTH_SHORT).show();

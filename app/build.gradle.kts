@@ -50,6 +50,8 @@ dependencies {
 
     // Adding mySQL dependency
     implementation(libs.mysql.connector.java)
+    // Added implementation for JSCH
+    implementation (libs.jsch)
 
     // Scalable size unit (Support for different screen sizes)
     implementation(libs.sdp.android)
@@ -57,7 +59,6 @@ dependencies {
 
     // Rounded image view
     implementation(libs.roundedimageview)
-    // Added implementation for JSCH
-    implementation (libs.jsch)
+
 
 }

@@ -47,7 +47,7 @@ public class Authentication {
                         throw new java.io.IOException(
                                 "Server returned HTTP"
                                         + " response code: " + respCode
-                                        + " for URL: " + url.toString());
+                                        + " for URL: " + url);
                     }
                 }
                 try (OutputStream os = conn.getOutputStream()) {

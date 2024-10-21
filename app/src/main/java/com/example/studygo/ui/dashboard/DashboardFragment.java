@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -118,7 +119,7 @@ public class DashboardFragment extends Fragment {
         layout.addView(eventNameInput);
 
         final EditText eventDetailsInput = new EditText(requireContext());
-        eventDetailsInput.setHint("Event Details");
+        eventDetailsInput.setHint("Event Details (Optional)");
         layout.addView(eventDetailsInput);
 
 
@@ -130,6 +131,10 @@ public class DashboardFragment extends Fragment {
             String eventDetails = eventDetailsInput.getText().toString();
             Long eventDate = new GregorianCalendar(year, month, day).getTimeInMillis();
             String eventTime = eventTimeInput.getText().toString();
+            if (eventName.isEmpty() || eventTime.isEmpty()) {
+                Toast.makeText(getContext() ,"Fill out required fields!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Event event = new Event(eventName, eventDetails, eventDate, eventTime);
 
             dashboardViewModel.addEvent(event);  // Add event to ViewModel
