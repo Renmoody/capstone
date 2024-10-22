@@ -1,6 +1,14 @@
 # StudyGo Android Application
 ### Description
-StudyGo is an academic social media app with the goal of facilitating good study habits for students and raising the average GPA of participating Universities and consequently their students. This will be achieved by incentivizing studying at different locations near campus through giving them discount codes at participating locations. These locations will boost sales through hosting study hours. This app will allow users to connect either one on one or by public group sessions through networking and a messaging platform. Students have the option to track their grades per class and see a visualization of study time to grade performance over a semester. Teachers will be able to use this app to set up different study events and companies can set-up study events as well. This will all be achievable through web browser and android applications. Security will not be a major concern with this initial build.
+StudyGo is an academic social media platform with the goal of raising the average GPA of students and their schools respectively. The application will have three different types of users including professors, students, and companies. Each of these users will be presented with similar UI/UX solutions and different permissions per user. Professors will be able to host study times for their students (if they can reserve classrooms with the school). They will also have the ability to have connections with their students as well as add what classes they are teaching. Professors will be verified. Students will be able to build a network of connections, message other students, organize their calendar to show their meeting times, and see companies in their area hosting study hours. They will also be able to reserve study hours at companies who offer them. They will have the ability to add the classes they are in for the current semester and find students who are also in those classes. Companies will be verified before creating an account and will have the ability to list their venue as a StudyGo partner. They can make posts about upcoming study events and offer discounts on their products to incentivize students to use their venue. They will not be able to message students but they can have followers so that people are notified when events happen. StudyGo will be available as an Android and web application.
+#### Motivation behind this project
+I initially came up with this idea in highschool. I knew I would be pursuing Computer Science in college and I wanted to learn the proper way of doing things before beginning development.
 
 ### Contents
 Navigate through each folder to find the coresponding README file. These will be updated as development continues.
+### How to use this project
+At the end of development this app will hopefully be deployed on the Android app store. However, in the meantime if you want to try out the product. You need a few things.
+1. Download and install Android Studio
+2. Clone this project into your android studio environment
+3. Configure an emulator in android studio with a minimum of SDK 28
+4. Run the app on your emulator and enjoy finding some bugs!
