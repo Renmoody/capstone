@@ -12,3 +12,9 @@ At the end of development this app will hopefully be deployed on the Android app
 2. Clone this project into your android studio environment
 3. Configure an emulator in android studio with a minimum of SDK 28
 4. Run the app on your emulator and enjoy finding some bugs!
+
+### Credits
+https://github.com/Renmoody || https://student-gitlab.pcs.cnu.edu/benjamin.moody.21 (Same Person) - Developer of the this project
+https://student-gitlab.pcs.cnu.edu/alexander.vann.21 - Web Application Developer 
+https://student-gitlab.pcs.cnu.edu/daniel.corcoran.20 - Database designer
+
