@@ -113,7 +113,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_13ssp"
             android:textStyle="bold"
-            android:backgroundTint="@color/eerie_black"
+            android:backgroundTint="@color/moss_green"
             app:cornerRadius="@dimen/_8sdp"
             />
         <TextView

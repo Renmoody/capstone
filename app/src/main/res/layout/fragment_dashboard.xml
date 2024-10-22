@@ -29,8 +29,10 @@
         android:layout_marginTop="@dimen/_16sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_5sdp"
         android:weekDayTextAppearance="@style/CustomCalendarDateTextAppearance"
         android:dateTextAppearance="@style/CustomCalendarDateTextAppearance"
+        android:background="@drawable/text_view_rounded"
         android:theme="@style/CustomDatePickerDialog"
         />
 
@@ -40,6 +42,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_6sdp"
+        android:layout_marginLeft="@dimen/_5sdp"
+        android:layout_marginRight="@dimen/_5sdp"
         android:dividerHeight="@dimen/_6sdp"
         android:divider="@color/moss_green"
 

@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
+    //Checking for shared pref changes
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String s) {
         Log.d(TAG, "onSharedPreferenceChanged: Preference "+s+" changed!");

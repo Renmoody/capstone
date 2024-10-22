@@ -26,4 +26,20 @@ public class DashboardViewModel extends ViewModel {
             eventListLiveData.setValue(currentList); // Notify observers of the updated list
         }
     }
+
+    public void updateEvent(Event event, int position) {
+        List<Event> currentList = eventListLiveData.getValue();
+        if (currentList != null && position >= 0 && position < currentList.size()) {
+            currentList.set(position, event);
+            eventListLiveData.setValue(currentList);
+        }
+    }
+
+    public void deleteEvent(int position) {
+        List<Event> currentList = eventListLiveData.getValue();
+        if (currentList != null && position >= 0 && position < currentList.size()) {
+            currentList.remove(position);  // Remove the event at the specified position
+            eventListLiveData.setValue(currentList);  // Notify observers of the updated list
+        }
+    }
 }

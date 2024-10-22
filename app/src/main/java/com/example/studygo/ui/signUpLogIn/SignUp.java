@@ -19,47 +19,24 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class SignUp extends AppCompatActivity {
     private static final int PERMISSION_REQUEST_CODE = 1;
-    private static final String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.POST_NOTIFICATIONS};
+    private static final String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
     private static final int PERMS_REQ_CODE = 200;
-    DatabaseConnectionManager dbmanager;
-    private String username = "renmoody67@gmail.com";
-    private String password = "testPassword";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         com.example.studygo.databinding.SignUpBinding binding = SignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        dbmanager = new DatabaseConnectionManager();
         verifyPermissions();
         binding.buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Call the new method to connect to the database asynchronously
-                dbmanager.connectToDatabaseAndAddUser(username, password, new ConnectionCallback() {
-                    @Override
-                    public void onSuccess() {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUp.this, "Connected to database", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(SignUp.this, MainActivity.class));
-                            }
-                        });
-                    }
 
-                    @Override
-                    public void onFailure(String errorMessage) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SignUp.this, "Connection failed: " + errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
             }
         });
+        binding.textSignUp.setOnClickListener(view ->
+                startActivity(new Intent(getApplicationContext(), LogIn.class)));
     }
 
     private boolean verifyPermissions() {
@@ -71,7 +48,7 @@ public class SignUp extends AppCompatActivity {
         if (!allGranted) {
             for (String permission : PERMISSIONS) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                    Snackbar.make(findViewById(android.R.id.content), permission + " WE GOTTA HAVE IT!", Snackbar.LENGTH_LONG).show();
+                    Toast.makeText(SignUp.this, "All permissions not granted yet", Toast.LENGTH_SHORT).show();
                 }
             }
             requestPermissions(PERMISSIONS, PERMS_REQ_CODE);
@@ -89,44 +66,16 @@ public class SignUp extends AppCompatActivity {
             }
         }
         if (allGranted) {
-            // Permissions granted, proceed with the connection logic
-            dbmanager.connectToDatabaseAndAddUser(username, password, new ConnectionCallback() {
-                @Override
-                public void onSuccess() {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(SignUp.this, "Connected to database", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(SignUp.this, MainActivity.class));
-
-                        }
-                    });
-                }
-
-                @Override
-                public void onFailure(String errorMessage) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(SignUp.this, "Connection failed: " + errorMessage, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            });
-        } else {
-            // Handle the case where permissions are not granted
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(SignUp.this, "Permissions required to connect to the database.", Toast.LENGTH_SHORT).show();
-                }
-            });
+            Toast.makeText(SignUp.this, "All permissions granted", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
+        else
+            Toast.makeText(SignUp.this, "All permissions not granted yet", Toast.LENGTH_SHORT).show();
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        dbmanager.shutDown();  // Shutdown the executor service in the manager
     }
 }

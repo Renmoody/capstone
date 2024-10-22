@@ -5,52 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment"
-    android:background="@color/beige"
+    android:background="@color/moss_green"
     >
 
-    <ScrollView
+    <ListView
+        android:id="@+id/feedOfEvents"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_26sdp"
+        android:dividerHeight="@dimen/_6sdp"
+        android:divider="@color/moss_green"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        />
 
-        <LinearLayout
-            android:id="@+id/scroll_view_parent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp"
-            android:orientation="vertical"
-            >
-            <TextView
-                android:id="@+id/scroll_view1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/scroll_view_text"
-                android:textColor="@color/white"
-                android:background="@drawable/text_view_rounded"
-                />
-            <TextView
-                android:id="@+id/scroll_view2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/scroll_view_text"
-                android:textColor="@color/beige"/>
-            <TextView
-                android:id="@+id/scroll_view3"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/scroll_view_text"
-                android:textColor="@color/beige"/>
-            <TextView
-                android:id="@+id/scroll_view4"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="@string/scroll_view_text"
-                android:textColor="@color/beige"/>
-
-        </LinearLayout>
-    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
