@@ -7,6 +7,7 @@
     android:overScrollMode="never"
     android:padding="@dimen/_24sdp"
     android:scrollbars="none"
+    android:background="@color/beige"
 
     >
     <LinearLayout
@@ -43,7 +44,7 @@
             android:inputType="textEmailAddress"
             android:paddingStart="@dimen/_16sdp"
             android:paddingEnd="@dimen/_16sdp"
-            android:textColor="@color/primary_text"
+            android:textColor="@color/eerie_black"
             android:textSize="@dimen/_13ssp"
             />
         <EditText
@@ -58,7 +59,7 @@
             android:inputType="textPassword"
             android:paddingStart="@dimen/_16sdp"
             android:paddingEnd="@dimen/_16sdp"
-            android:textColor="@color/primary_text"
+            android:textColor="@color/eerie_black"
             android:textSize="@dimen/_13ssp"
             />
         <com.google.android.material.button.MaterialButton
@@ -70,6 +71,7 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_13ssp"
             android:textStyle="bold"
+            android:backgroundTint="@color/moss_green"
             app:cornerRadius="@dimen/_8sdp"
             />
         <TextView

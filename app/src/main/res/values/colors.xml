@@ -15,4 +15,11 @@
     <color name="icon_background">#20FFFFFF</color>
     <color name="error">#B00020</color>
     <color name="recieved_message_background">#090D16</color>
+    <color name="baby_powder">#F7F7F2</color>
+    <color name="beige">#E4E6C3</color>
+    <color name="moss_green">#899878</color>
+    <color name="eerie_black">#222725</color>
+    <color name="night">#121113</color>
+
+
 </resources>

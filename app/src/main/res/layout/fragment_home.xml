@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment"
-    android:background="@color/primary"
+    android:background="@color/beige"
     >
 
     <ScrollView
@@ -28,25 +28,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/scroll_view_text"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:background="@drawable/text_view_rounded"
+                />
             <TextView
                 android:id="@+id/scroll_view2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/scroll_view_text"
-                android:textColor="@color/white"/>
+                android:textColor="@color/beige"/>
             <TextView
                 android:id="@+id/scroll_view3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/scroll_view_text"
-                android:textColor="@color/white"/>
+                android:textColor="@color/beige"/>
             <TextView
                 android:id="@+id/scroll_view4"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="@string/scroll_view_text"
-                android:textColor="@color/white"/>
+                android:textColor="@color/beige"/>
 
         </LinearLayout>
     </ScrollView>

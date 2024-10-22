@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
 }
-
 android {
     namespace = "com.example.studygo"
     compileSdk = 34
@@ -49,9 +48,11 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     // Adding mySQL dependency
-    implementation(libs.mysql.connector.java)
+    implementation("mysql:mysql-connector-java:8.0.30")
     // Added implementation for JSCH
     implementation (libs.jsch)
+//    Added implementation for JDBC
+
 
     // Scalable size unit (Support for different screen sizes)
     implementation(libs.sdp.android)
@@ -59,6 +60,7 @@ dependencies {
 
     // Rounded image view
     implementation(libs.roundedimageview)
+
 
 
 }

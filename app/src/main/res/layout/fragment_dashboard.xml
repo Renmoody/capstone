@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginTop="0dp"
     tools:context=".ui.dashboard.DashboardFragment"
-    android:background="@color/primary"
+    android:background="@color/moss_green"
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
@@ -17,8 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/upcoming_events"
-        android:textColor="@color/white"
+        android:padding="@dimen/_6sdp"
+        android:textColor="@color/eerie_black"
         android:textSize="@dimen/_20ssp"
+        android:background="@drawable/text_view_rounded"
         android:textStyle="bold"
         />
 
@@ -36,6 +38,10 @@
         android:id="@+id/listOfEvents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_6sdp"
+        android:dividerHeight="@dimen/_6sdp"
+        android:divider="@color/moss_green"
 
         />
 

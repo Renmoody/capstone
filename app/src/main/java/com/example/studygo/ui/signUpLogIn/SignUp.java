@@ -1,6 +1,7 @@
 package com.example.studygo.ui.signUpLogIn;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.studygo.MainActivity;
 import com.example.studygo.databinding.SignUpBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -20,6 +22,8 @@ public class SignUp extends AppCompatActivity {
     private static final String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.POST_NOTIFICATIONS};
     private static final int PERMS_REQ_CODE = 200;
     DatabaseConnectionManager dbmanager;
+    private String username = "renmoody67@gmail.com";
+    private String password = "testPassword";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,18 +32,18 @@ public class SignUp extends AppCompatActivity {
         setContentView(binding.getRoot());
         dbmanager = new DatabaseConnectionManager();
         verifyPermissions();
-
         binding.buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Call the new method to connect to the database asynchronously
-                dbmanager.connectToDatabase(new ConnectionCallback() {
+                dbmanager.connectToDatabaseAndAddUser(username, password, new ConnectionCallback() {
                     @Override
                     public void onSuccess() {
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(SignUp.this, "Connected to database", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(SignUp.this, MainActivity.class));
                             }
                         });
                     }
@@ -86,13 +90,15 @@ public class SignUp extends AppCompatActivity {
         }
         if (allGranted) {
             // Permissions granted, proceed with the connection logic
-            dbmanager.connectToDatabase(new ConnectionCallback() {
+            dbmanager.connectToDatabaseAndAddUser(username, password, new ConnectionCallback() {
                 @Override
                 public void onSuccess() {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(SignUp.this, "Connected to database", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(SignUp.this, MainActivity.class));
+
                         }
                     });
                 }

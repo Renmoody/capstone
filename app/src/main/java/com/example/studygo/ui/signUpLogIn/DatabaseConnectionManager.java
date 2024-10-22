@@ -1,12 +1,20 @@
 package com.example.studygo.ui.signUpLogIn;
 
+import static androidx.core.content.ContextCompat.startActivity;
+
+import android.content.Intent;
 import android.util.Log;
 
+import com.example.studygo.MainActivity;
+import com.example.studygo.ui.dashboard.DashboardFragment;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-
-import java.io.ByteArrayInputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,7 +22,11 @@ public class DatabaseConnectionManager {
     private static final String SSH_HOST = "92.112.187.2";
     private static final int SSH_PORT = 65002;
     private static final String SSH_USER = "u511097224";
-    private static final String SSH_PRIVATE_KEY_PATH = "C:/Users/renpo/.ssh/id_rsa_priv"; // Add path to your private key
+    private static final String DB_HOST = "localhost";
+    private static final String DB_PORT = "3306";
+    private static final String DB_NAME = "u511097224_StudyGo";
+    private static final String DB_USER = "u511097224_admin";
+    private static final String DB_PASSWORD = "Studium3!7";
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     // The private key as a string
@@ -71,41 +83,86 @@ public class DatabaseConnectionManager {
                     "ZemN9sZgTmEHrTItYFhejBIqKH9QhEEqrOEe3VuDqkdOEXuSI3YsaBy8A2YD\n" +
                     "-----END RSA PRIVATE KEY-----\n";
     // Method to perform SSH connection with callback
-    public void connectToDatabase(ConnectionCallback callback) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                Session session = null;
-                try {
-                    // Set up JSch session to the SSH server
-                    JSch jsch = new JSch();
-                    // Load the private key for SSH authentication
+    public void connectToDatabaseAndAddUser(String username, String password, ConnectionCallback callback) {
+        executorService.execute(() -> {
+            Session session = null;
+            Connection mysqlConnection = null;
+            try {
+                // Set up JSch session to the SSH server
+                JSch jsch = new JSch();
+                byte[] privateKeyBytes = PRIVATE_KEY.getBytes();
+                jsch.addIdentity("id_rsa", privateKeyBytes, null, null);
 
-                    // Load the private key directly from the string
-                    byte[] privateKeyBytes = PRIVATE_KEY.getBytes(); // Convert string to byte array
-                    ByteArrayInputStream privateKeyStream = new ByteArrayInputStream(privateKeyBytes);
-                    jsch.addIdentity("id_rsa", privateKeyBytes, null, null);
+                session = jsch.getSession(SSH_USER, SSH_HOST, SSH_PORT);
+                session.setConfig("StrictHostKeyChecking", "no");
+                int assignedPort = session.setPortForwardingL(3306, DB_HOST, Integer.parseInt(DB_PORT));
+                Log.d("SSH", "Port forwarding set up on local port: " + assignedPort);
 
+                session.connect();
 
-                    session = jsch.getSession(SSH_USER, SSH_HOST, SSH_PORT);
+                if (session.isConnected()) {
+                    // Set up MySQL connection through the SSH tunnel
+                    String jdbcUrl = "jdbc:mysql://" + DB_HOST + ":" + DB_PORT + "/" + DB_NAME;
+                    System.out.println("About to connect");
+                    try {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+                        System.out.println("Loaded driver");
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                        callback.onFailure("MySQL JDBC Driver not found.");
+                    }
 
-                    // Disable strict host key checking for simplicity
-                    session.setConfig("StrictHostKeyChecking", "no");
-                    session.connect();
-                    System.out.println(session.isConnected());
-                    // Here you would typically open a tunnel or handle database connection
-                    // For now, let's simulate successful connection
-                    callback.onSuccess();
-                } catch (JSchException e) {
-                    callback.onFailure("SSH Error: " + e.getMessage());
-                    e.printStackTrace();
-                } finally {
-                    if (session != null && session.isConnected()) {
-                        session.disconnect();
+                    mysqlConnection = DriverManager.getConnection(jdbcUrl, DB_USER, DB_PASSWORD);
+                    System.out.println("Connected");
+                    // Check if the user already exists
+                    if (checkIfUserExists(mysqlConnection, username)) {
+                        callback.onFailure("User already exists");
+                    } else {
+                        // Insert a new user into the database
+                        addUserToDatabase(mysqlConnection, username, password);
+                        callback.onSuccess();
+                        }
+                }
+
+            } catch (JSchException | SQLException e) {
+                callback.onFailure("Error: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                if (session != null && session.isConnected()) {
+                    session.disconnect();
+                }
+                if (mysqlConnection != null) {
+                    try {
+                        mysqlConnection.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
                 }
             }
         });
+        shutDown();
+    }
+
+    private boolean checkIfUserExists(Connection connection, String username) throws SQLException {
+        String query = "SELECT COUNT(*) FROM users WHERE username = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void addUserToDatabase(Connection connection, String username, String password) throws SQLException {
+        String query = "INSERT INTO users (username, password) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password);  // Store password securely with hashing in real applications
+            stmt.executeUpdate();
+        }
     }
 
     // Method to shut down the executor service
