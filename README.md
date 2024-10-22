@@ -14,7 +14,7 @@ At the end of development this app will hopefully be deployed on the Android app
 4. Run the app on your emulator and enjoy finding some bugs!
 
 ### Credits
-https://github.com/Renmoody || https://student-gitlab.pcs.cnu.edu/benjamin.moody.21 (Same Person) - Developer of the this project
-https://student-gitlab.pcs.cnu.edu/alexander.vann.21 - Web Application Developer 
+https://github.com/Renmoody || https://student-gitlab.pcs.cnu.edu/benjamin.moody.21 (Same Person) - Developer of the this project<br>
+https://student-gitlab.pcs.cnu.edu/alexander.vann.21 - Web Application Developer<br>
 https://student-gitlab.pcs.cnu.edu/daniel.corcoran.20 - Database designer
 
