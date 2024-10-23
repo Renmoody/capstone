@@ -6,73 +6,58 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.studygo.MainActivity;
 import com.example.studygo.databinding.SignUpBinding;
+import com.example.studygo.ui.dashboard.DashboardFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-public class SignUp extends AppCompatActivity {
-    private static final int PERMISSION_REQUEST_CODE = 1;
-    private static final String[] PERMISSIONS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
-    private static final int PERMS_REQ_CODE = 200;
-
-
+public class SignUp extends Fragment {
+    private FirebaseAuth mAuth;
+    private final String TAG = "FireBaseAuth";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        com.example.studygo.databinding.SignUpBinding binding = SignUpBinding.inflate(getLayoutInflater());
+        SignUpBinding binding;
+        binding = SignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        verifyPermissions();
-        binding.buttonSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mAuth = FirebaseAuth.getInstance();
+        String email = null;
+        String password = null;
 
-            }
-        });
-        binding.textSignUp.setOnClickListener(view ->
-                startActivity(new Intent(getApplicationContext(), LogIn.class)));
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            startActivity(new Intent(SignUp.this, DashboardFragment.class));
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(SignUp.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
-    private boolean verifyPermissions() {
-        boolean allGranted = true;
-        for (String permission : PERMISSIONS) {
-            allGranted = allGranted && (ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED);
-        }
-
-        if (!allGranted) {
-            for (String permission : PERMISSIONS) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
-                    Toast.makeText(SignUp.this, "All permissions not granted yet", Toast.LENGTH_SHORT).show();
-                }
-            }
-            requestPermissions(PERMISSIONS, PERMS_REQ_CODE);
-        }
-        return allGranted;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int permsRequestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(permsRequestCode, permissions, grantResults);
-        boolean allGranted = true;
-        if (permsRequestCode == PERMS_REQ_CODE) {
-            for (int result : grantResults) {
-                allGranted = allGranted && (result == PackageManager.PERMISSION_GRANTED);
-            }
-        }
-        if (allGranted) {
-            Toast.makeText(SignUp.this, "All permissions granted", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-        }
-        else
-            Toast.makeText(SignUp.this, "All permissions not granted yet", Toast.LENGTH_SHORT).show();
-
-    }
 
     @Override
     protected void onDestroy() {

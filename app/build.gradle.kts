@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 android {
     namespace = "com.example.studygo"
@@ -43,12 +44,11 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.preference)
+    implementation(libs.firebase.auth)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    // Adding mySQL dependency
-    implementation("mysql:mysql-connector-java:8.0.30")
     // Added implementation for JSCH
     implementation (libs.jsch)
 //    Added implementation for JDBC
