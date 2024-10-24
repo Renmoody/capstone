@@ -1,28 +1,19 @@
 package com.example.studygo.ui.signUpLogIn;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.example.studygo.MainActivity;
 import com.example.studygo.databinding.SignUpBinding;
-import com.example.studygo.ui.dashboard.DashboardFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +21,11 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignUp extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private SignUpBinding binding;
+    private String name = null;
+    private String email = null;
+    private String password = null;
+    private String confirmPassword = null;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +35,69 @@ public class SignUp extends AppCompatActivity {
         setListeners();
 
     }
-    private void setListeners() {
 
+    private void addDataToFireBase() {
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "Must fill out all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!(password.equals(confirmPassword))) {
+            Toast.makeText(getApplicationContext(), "Passwords don't match", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("Auth", "createUserWithEmail:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("Auth", "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(SignUp.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
+    }
+    private void setListeners() {
+        binding.buttonSignUp.setOnClickListener(view -> addDataToFireBase());
+        binding.inputName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {name = charSequence.toString();}
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        binding.inputEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {email = charSequence.toString();}
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        binding.inputPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {password = charSequence.toString();}
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        binding.inputConfirmPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {confirmPassword = charSequence.toString();}
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
     }
 
 
