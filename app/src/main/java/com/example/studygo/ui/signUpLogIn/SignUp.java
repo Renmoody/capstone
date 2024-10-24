@@ -21,17 +21,21 @@ import com.google.firebase.auth.FirebaseUser;
 public class SignUp extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private SignUpBinding binding;
-    private String name = null;
-    private String email = null;
-    private String password = null;
-    private String confirmPassword = null;
+    private String name;
+    private String email;
+    private String password;
+    private String confirmPassword;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SignUpBinding binding;
         binding = SignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+
+        setParams();
         setListeners();
 
     }
@@ -100,6 +104,12 @@ public class SignUp extends AppCompatActivity {
         });
     }
 
+    private void setParams() {
+        email = binding.inputEmail.toString();
+        name = binding.inputName.toString();
+        password = binding.inputPassword.toString();
+        confirmPassword = binding.inputConfirmPassword.toString();
+    }
 
     @Override
     protected void onDestroy() {
