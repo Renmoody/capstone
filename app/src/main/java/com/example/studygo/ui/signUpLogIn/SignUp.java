@@ -1,6 +1,9 @@
 package com.example.studygo.ui.signUpLogIn;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,15 +11,20 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
+import androidx.preference.PreferenceManager;
 
 import com.example.studygo.MainActivity;
+import com.example.studygo.R;
 import com.example.studygo.databinding.SignUpBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class SignUp extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -25,6 +33,7 @@ public class SignUp extends AppCompatActivity {
     private String email;
     private String password;
     private String confirmPassword;
+    SharedPreferences.Editor preferenceManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +43,6 @@ public class SignUp extends AppCompatActivity {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
-
         setParams();
         setListeners();
 
@@ -57,7 +65,34 @@ public class SignUp extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Auth", "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            assert user != null;
+
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("Email Verification", "Email sent.");
+                                                if (user.isEmailVerified())
+                                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                            }
+                                        }
+                                    });
+
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(name)
+                                    .build();
+
+                            user.updateProfile(profileUpdates)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d("User", "User profile updated.");
+                                            }
+                                        }
+                                    });
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Auth", "createUserWithEmail:failure", task.getException());

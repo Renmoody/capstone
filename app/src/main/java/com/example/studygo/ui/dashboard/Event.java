@@ -1,9 +1,5 @@
 package com.example.studygo.ui.dashboard;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.util.GregorianCalendar;
-
 public class Event {
     private final Long eventDate;
     private String eventTime;

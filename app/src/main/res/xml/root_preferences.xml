@@ -2,6 +2,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="User Options">
     <EditTextPreference
+        app:key="email"
+        app:title="Email"
+        app:defaultValue="Email"
+        app:useSimpleSummaryProvider="true"
+        />
+    <EditTextPreference
         app:key="username"
         app:title="@string/Username"
         app:defaultValue="@string/Username"
@@ -28,4 +34,10 @@
     <!--        app:summaryOff="@string/Switch_to_dark_theme"-->
     <!--        app:summaryOn="@string/Switch_to_light_theme"-->
 
+    <PreferenceCategory>
+        <Preference
+            app:title="Sign Out"
+            app:key="sign_out"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>

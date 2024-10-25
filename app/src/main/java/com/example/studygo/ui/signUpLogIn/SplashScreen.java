@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studygo.MainActivity;
 import com.example.studygo.R;
-import com.example.studygo.ui.dashboard.DashboardFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
