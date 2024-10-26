@@ -42,4 +42,6 @@
     <string name="time">Time</string>
     <string name="type_a_message">Type a message</string>
     <string name="forgot_password">Forgot password?</string>
+    <string name="student">Student</string>
+    <string name="professor">Professor</string>
 </resources>

@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,6 +35,8 @@ public class SignUp extends AppCompatActivity {
     private String email;
     private String password;
     private String confirmPassword;
+    private RadioGroup radioGroup;
+    private String accountType;
     SharedPreferences.Editor preferenceManager;
 
     @Override
@@ -107,6 +111,22 @@ public class SignUp extends AppCompatActivity {
                 });
     }
     private void setListeners() {
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton checkedRadioButton = radioGroup.findViewById(i);
+                String accountSelect = checkedRadioButton.getText().toString();
+                if (accountSelect.isEmpty()) {
+                    accountType = "student";
+                }
+                if (accountSelect.equals("radioProfessor")) {
+                    accountType = "professor";
+                }
+                if (accountSelect.equals("radioStudent")) {
+                    accountType = "student";
+                }
+            }
+        });
         binding.buttonSignUp.setOnClickListener(view -> addDataToFireBase());
         binding.textLogIn.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), LogIn.class)));
         binding.inputName.addTextChangedListener(new TextWatcher() {
@@ -148,6 +168,7 @@ public class SignUp extends AppCompatActivity {
         name = binding.inputName.toString();
         password = binding.inputPassword.toString();
         confirmPassword = binding.inputConfirmPassword.toString();
+        radioGroup = binding.accountTypeGroup;
     }
 
     @Override
