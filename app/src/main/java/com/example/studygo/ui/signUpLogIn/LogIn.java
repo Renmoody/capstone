@@ -18,6 +18,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class LogIn extends AppCompatActivity {
     private LogInBinding binding;
     private FirebaseAuth mAuth;
@@ -40,6 +42,15 @@ public class LogIn extends AppCompatActivity {
 
     private void setListeners() {
         binding.textCreateNewAccount.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), SignUp.class)));
+        binding.textForgotPassword.setOnClickListener(view -> {
+            FirebaseAuth auth = FirebaseAuth.getInstance();
+            if (!binding.inputEmail.getText().toString().isEmpty()) {
+                auth.sendPasswordResetEmail(Objects.requireNonNull(email));
+                Toast.makeText(getApplicationContext(), "Password reset link sent!", Toast.LENGTH_SHORT).show();
+            }
+            else
+                Toast.makeText(getApplicationContext(), "Please fill out email section", Toast.LENGTH_SHORT).show();
+        });
         binding.buttonSignIn.setOnClickListener(view -> {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -49,7 +60,10 @@ public class LogIn extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("Auth", "signInWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                if (user != null && user.isEmailVerified())
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                else
+                                    Toast.makeText(getApplicationContext(), "Please verify email", Toast.LENGTH_SHORT).show();
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w("Auth", "signInWithEmail:failure", task.getException());

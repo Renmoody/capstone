@@ -32,6 +32,14 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             startActivity(new Intent(getContext(), LogIn.class));
             return true;
         }
+        if ("delete_account".equals(preference.getKey())) {
+            // Sign out the user
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            // Redirect to login activity
+            user.delete();
+            startActivity(new Intent(getContext(), LogIn.class));
+            return true;
+        }
         return super.onPreferenceTreeClick(preference);
     }
 

@@ -84,6 +84,17 @@
             android:textColor="@color/primary"
             android:textSize="@dimen/_13ssp"
             />
+        />
+        <TextView
+            android:id="@+id/textForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/forgot_password"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:textSize="@dimen/_13ssp"
+            />
 
 
 

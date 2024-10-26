@@ -49,7 +49,10 @@ public class SignUp extends AppCompatActivity {
     }
 
     private void addDataToFireBase() {
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+        if (binding.inputName.getText().toString().isEmpty() ||
+                binding.inputEmail.getText().toString().isEmpty() ||
+                binding.inputPassword.getText().toString().isEmpty() ||
+                binding.inputConfirmPassword.getText().toString().isEmpty()) {
             Toast.makeText(getApplicationContext(), "Must fill out all fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -66,18 +69,16 @@ public class SignUp extends AppCompatActivity {
                             Log.d("Auth", "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             assert user != null;
-
                             user.sendEmailVerification()
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d("Email Verification", "Email sent.");
-                                                if (user.isEmailVerified())
-                                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                             }
                                         }
                                     });
+
 
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name)
@@ -89,6 +90,7 @@ public class SignUp extends AppCompatActivity {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Log.d("User", "User profile updated.");
+                                                Log.d("User", "name: " + user.getDisplayName());
                                             }
                                         }
                                     });
@@ -96,15 +98,17 @@ public class SignUp extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Auth", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignUp.this, "Authentication failed.",
+                            Toast.makeText(SignUp.this, "Email already in use",
                                     Toast.LENGTH_SHORT).show();
 
                         }
+
                     }
                 });
     }
     private void setListeners() {
         binding.buttonSignUp.setOnClickListener(view -> addDataToFireBase());
+        binding.textLogIn.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), LogIn.class)));
         binding.inputName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
