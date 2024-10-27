@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     android:background="@color/moss_green"
-    tools:context=".ui.messages.MessagesFragment"
+    tools:context=".activities.ui.messages.MessagesFragment"
     android:paddingBottom="@dimen/_36sdp">
    
    <View

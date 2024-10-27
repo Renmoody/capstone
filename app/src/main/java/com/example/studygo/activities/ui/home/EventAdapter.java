@@ -1,4 +1,4 @@
-package com.example.studygo.ui.home;
+package com.example.studygo.activities.ui.home;
 
 
 import android.content.Context;
@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import android.widget.ArrayAdapter;
 
 import com.example.studygo.R;
-import com.example.studygo.ui.dashboard.Event;
+import com.example.studygo.activities.ui.dashboard.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

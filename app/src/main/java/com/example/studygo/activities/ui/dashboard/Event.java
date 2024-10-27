@@ -1,4 +1,4 @@
-package com.example.studygo.ui.dashboard;
+package com.example.studygo.activities.ui.dashboard;
 
 public class Event {
     private final Long eventDate;

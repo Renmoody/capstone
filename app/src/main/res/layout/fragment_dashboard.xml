@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="0dp"
-    tools:context=".ui.dashboard.DashboardFragment"
+    tools:context=".activities.ui.dashboard.DashboardFragment"
     android:background="@color/moss_green"
     android:orientation="vertical"
     android:gravity="center_horizontal">

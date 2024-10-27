@@ -1,4 +1,4 @@
-package com.example.studygo.ui.dashboard;
+package com.example.studygo.activities.ui.dashboard;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;

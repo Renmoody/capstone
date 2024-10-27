@@ -1,4 +1,4 @@
-package com.example.studygo.ui.home;
+package com.example.studygo.activities.ui.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.studygo.R;
 import com.example.studygo.databinding.FragmentHomeBinding;
-import com.example.studygo.ui.dashboard.Event;
+import com.example.studygo.activities.ui.dashboard.Event;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.studygo.ui.messages;
+package com.example.studygo.activities.ui.messages;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
