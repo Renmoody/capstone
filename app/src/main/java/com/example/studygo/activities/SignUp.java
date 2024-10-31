@@ -36,12 +36,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 public class SignUp extends AppCompatActivity {
-    private FirebaseAuth mAuth;
     private SignUpBinding binding;
-    private String name;
-    private String email;
-    private String password;
-    private String confirmPassword;
     private RadioGroup radioGroup;
     private String accountType;
     private String encodedImage;
@@ -54,73 +49,12 @@ public class SignUp extends AppCompatActivity {
         binding = SignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize Firebase Auth
-        mAuth = FirebaseAuth.getInstance();
-
         preferenceManager = new PreferenceManager(getApplicationContext());
         setParams();
         setListeners();
 
     }
 
-    private void addDataToFireBase() {
-        if (binding.inputName.getText().toString().isEmpty() ||
-                binding.inputEmail.getText().toString().isEmpty() ||
-                binding.inputPassword.getText().toString().isEmpty() ||
-                binding.inputConfirmPassword.getText().toString().isEmpty()) {
-            Toast.makeText(getApplicationContext(), "Must fill out all fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!(password.equals(confirmPassword))) {
-            Toast.makeText(getApplicationContext(), "Passwords don't match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("Auth", "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            assert user != null;
-                            user.sendEmailVerification()
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d("Email Verification", "Email sent.");
-                                            }
-                                        }
-                                    });
-
-
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(name)
-                                    .build();
-
-                            user.updateProfile(profileUpdates)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d("User", "User profile updated.");
-                                                Log.d("User", "name: " + user.getDisplayName());
-                                            }
-                                        }
-                                    });
-
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("Auth", "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignUp.this, "Email already in use",
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-
-                    }
-                });
-    }
     private Boolean validSignUp() {
         if (encodedImage == null) {
             Toast.makeText(this, "Select a profile Image", Toast.LENGTH_SHORT).show();
@@ -222,10 +156,6 @@ public class SignUp extends AppCompatActivity {
     });
 
     private void setParams() {
-        email = binding.inputEmail.toString();
-        name = binding.inputName.toString();
-        password = binding.inputPassword.toString();
-        confirmPassword = binding.inputConfirmPassword.toString();
         radioGroup = binding.accountTypeGroup;
     }
 
