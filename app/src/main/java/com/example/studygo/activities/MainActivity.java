@@ -2,10 +2,21 @@ package com.example.studygo.activities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.example.studygo.R;
+import com.example.studygo.utilities.Constants;
+import com.example.studygo.utilities.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.Nullable;
@@ -18,25 +29,21 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.studygo.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
-
+public class MainActivity extends AppCompatActivity{
     private final String TAG = "Preference Change";
-    private FirebaseUser user;
-
+    private ActivityMainBinding binding;
+    private  PreferenceManager preferenceManager;
+    Menu menu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Inflate the binding
         // Declare binding as a field
-        com.example.studygo.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
-
-        // Setting up shared preferences
-        SharedPreferences settings = getSharedPreferences(this.getPackageName() + "_preferences", Context.MODE_PRIVATE);
-        settings.registerOnSharedPreferenceChangeListener(this);
+        preferenceManager = new PreferenceManager(getApplicationContext());
 
         // Set up the bottom navigation view
         BottomNavigationView navView = binding.navView; // Use the binding
@@ -59,9 +66,21 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
-    //Checking for shared pref changes
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, @Nullable String s) {
-        Log.d(TAG, "onSharedPreferenceChanged: Preference "+s+" changed!");
+
+    private void loadUserInfo() {
+        MenuItem settingImage = menu.findItem(R.id.navigation_settings);
+        byte[] bytes = Base64.decode(preferenceManager.getString(Constants.KEY_IMAGE), Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        Drawable drawableIcon = new BitmapDrawable(getResources(), bitmap);
+        settingImage.setIcon(drawableIcon);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.student_bottom_nav_menu, menu);  // R.menu.main_menu references main_menu.xml
+        return true;
+    }
+
+
+
 }
