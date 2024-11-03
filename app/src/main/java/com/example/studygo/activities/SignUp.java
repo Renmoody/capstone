@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.RadioButton;
@@ -16,18 +15,11 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studygo.databinding.SignUpBinding;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
@@ -187,8 +179,14 @@ public class SignUp extends AppCompatActivity {
                     preferenceManager.putString(Constants.KEY_NAME, binding.inputName.getText().toString());
                     preferenceManager.putString(Constants.KEY_IMAGE, encodedImage);
                     preferenceManager.putString(Constants.KEY_ACCOUNT_TYPE, accountType);
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    startActivity(intent);
+                    if (accountType.equals("student")) {
+                        Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
+                        startActivity(intent);
+                    }
+                    else if (accountType.equals("professor")) {
+                        Intent intent = new Intent(getApplicationContext(), ActivityTeacher.class);
+                        startActivity(intent);
+                    }
 
                 })
                 .addOnFailureListener(e -> {
