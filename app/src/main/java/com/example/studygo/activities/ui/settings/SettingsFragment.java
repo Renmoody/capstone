@@ -21,6 +21,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         // Handle the click event for any preference
         String key = preference.getKey();
         if (key.equals("sign_out")) {
+
             startActivity(new Intent(getContext(), LogIn.class));
         }
 
