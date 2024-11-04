@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.example.studygo.activities.ui.settings.SettingsFragment"
+        android:name="com.example.studygo.activities.ui.settings.PreferenceFragment"
         android:label="@string/title_messages"
         />
 </navigation>

@@ -47,38 +47,43 @@ public class SignUp extends AppCompatActivity {
 
     }
 
+    // Reduce redundancy
+    private void showToast(String m) {
+        Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
+    }
+
     private Boolean validSignUp() {
         if (encodedImage == null) {
-            Toast.makeText(this, "Select a profile Image", Toast.LENGTH_SHORT).show();
+            showToast("Select a profile Image");
             return false;
         }
         else if (!accountSelected) {
-            Toast.makeText(this, "Select account type", Toast.LENGTH_SHORT).show();
+            showToast("Select account type");
             return false;
         }
         else if (binding.inputEmail.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this, "Fill out email", Toast.LENGTH_SHORT).show();
+            showToast("Fill out email");
             return false;
         }
         else if (binding.inputName.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this, "Fill out name", Toast.LENGTH_SHORT).show();
+            showToast("Fill out name");
             return false;
         }
 
         else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
-            Toast.makeText(this, "Please input valid email address", Toast.LENGTH_SHORT).show();
+            showToast("Please input valid email address");
             return false;
         }
         else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this, "Fill out password", Toast.LENGTH_SHORT).show();
+            showToast("Fill out password");
             return false;
         }
         else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
-            Toast.makeText(this, "Fill out confirm password", Toast.LENGTH_SHORT).show();
+            showToast("Fill out confirm password");
             return false;
         }
         else if (!binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())) {
-            Toast.makeText(this, "Passwords must match!", Toast.LENGTH_SHORT).show();
+            showToast("Passwords must match!");
             return false;
         }
         else {
@@ -179,6 +184,8 @@ public class SignUp extends AppCompatActivity {
                     preferenceManager.putString(Constants.KEY_NAME, binding.inputName.getText().toString());
                     preferenceManager.putString(Constants.KEY_IMAGE, encodedImage);
                     preferenceManager.putString(Constants.KEY_ACCOUNT_TYPE, accountType);
+                    preferenceManager.putString(Constants.KEY_USERNAME, binding.inputName.getText().toString());
+                    preferenceManager.putString(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
                     if (accountType.equals("student")) {
                         Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
                         startActivity(intent);

@@ -74,6 +74,7 @@ public class ActivityStudent extends AppCompatActivity {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
+//    Reduce redundancy and also for testing
     private void showToast(String m) {
         Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
     }

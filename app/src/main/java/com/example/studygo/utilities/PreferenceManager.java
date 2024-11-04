@@ -2,6 +2,9 @@ package com.example.studygo.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import java.nio.file.Path;
 
 public class PreferenceManager {
     private final SharedPreferences sharedPreferences;
