@@ -175,6 +175,7 @@ public class SignUp extends AppCompatActivity {
         user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
         user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
         user.put(Constants.KEY_IMAGE, encodedImage);
+        user.put(Constants.KEY_ACCOUNT_TYPE, accountType);
         db.collection(Constants.KEY_COLLECTION_USERS)
                 .add(user)
                 .addOnSuccessListener(documentReference -> {
@@ -184,7 +185,6 @@ public class SignUp extends AppCompatActivity {
                     preferenceManager.putString(Constants.KEY_NAME, binding.inputName.getText().toString());
                     preferenceManager.putString(Constants.KEY_IMAGE, encodedImage);
                     preferenceManager.putString(Constants.KEY_ACCOUNT_TYPE, accountType);
-                    preferenceManager.putString(Constants.KEY_USERNAME, binding.inputName.getText().toString());
                     preferenceManager.putString(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
                     if (accountType.equals("student")) {
                         Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
