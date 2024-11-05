@@ -6,7 +6,7 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -16,20 +16,22 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StudyGo"
-        tools:targetApi="31"
-        android:networkSecurityConfig="@xml/network_security_config">
+        tools:targetApi="31">
         <service
             android:name=".firebase.MessagingService"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <activity android:name=".activities.LogIn"/>
-        <activity android:name=".activities.SplashScreen"
+
+        <activity android:name=".activities.LogIn" />
+        <activity
+            android:name=".activities.SplashScreen"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -38,14 +40,18 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activities.SignUp"
-            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".activities.SignUp"
+            android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".activities.ActivityStudent"/>
+        <activity android:name=".activities.ActivityStudent" />
         <activity android:name="com.example.studygo.activities.ActivityTeacher" />
         <activity android:name="com.example.studygo.activities.ui.settings.PreferenceActivity" />
         <activity android:name="com.example.studygo.activities.ActivityMessages" />
         <activity android:name="com.example.studygo.activities.UsersActivity" />
+        <activity
+            android:name="com.example.studygo.activities.ui.messages.MessagesFragment"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 
