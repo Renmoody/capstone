@@ -44,6 +44,8 @@
         <activity android:name=".activities.ActivityStudent"/>
         <activity android:name="com.example.studygo.activities.ActivityTeacher" />
         <activity android:name="com.example.studygo.activities.ui.settings.PreferenceActivity" />
+        <activity android:name="com.example.studygo.activities.ActivityMessages" />
+        <activity android:name="com.example.studygo.activities.UsersActivity" />
 
     </application>
 

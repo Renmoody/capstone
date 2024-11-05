@@ -19,6 +19,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.EditTextPreference;
+
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,7 +46,7 @@ public class ActivityTeacher extends AppCompatActivity {
 
         // Specify top-level destinations
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_dashboard, R.id.navigation_messages, R.xml.root_preferences)
+                R.id.navigation_dashboard, R.id.navigation_messages_activity, R.xml.root_preferences)
                 .build();
 
         // Set up the NavController
@@ -52,7 +54,6 @@ public class ActivityTeacher extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
         getToken();
-        showToast(preferenceManager.getString("username"));
     }
 
     @Override

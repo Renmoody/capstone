@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -15,9 +16,13 @@ import com.example.studygo.activities.LogIn;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class PreferenceFragment extends PreferenceFragmentCompat {
@@ -41,8 +46,27 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
     public boolean onPreferenceTreeClick(Preference preference) {
         String key = preference.getKey();
         if ("sign_out".equals(key)) {
-            preferenceManager.putBool(Constants.KEY_IS_SIGNED_IN, false);
-            startActivity(new Intent(getContext(), LogIn.class));
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference documentReference = db.collection("users").document(
+                    preferenceManager.getString(Constants.KEY_USER_ID)
+            );
+            HashMap<String, Object> updates = new HashMap<>();
+            updates.put(Constants.KEY_FCM_TOKEN, FieldValue.delete());
+            documentReference.update(updates).addOnSuccessListener(unused -> {
+                preferenceManager.clear();
+                startActivity(new Intent(requireContext(), LogIn.class));
+            })
+                    .addOnFailureListener(e -> Toast.makeText(requireContext(), "Unable to sign out", Toast.LENGTH_SHORT).show());
+
+        }
+        if ("delete_account".equals(key)) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("users").document(Constants.KEY_USER_ID).delete().addOnSuccessListener(task -> {
+                Toast.makeText(requireContext(), "Account Deleted", Toast.LENGTH_SHORT).show();
+                preferenceManager.clear();
+            });
+
+
         }
         return super.onPreferenceTreeClick(preference);
     }

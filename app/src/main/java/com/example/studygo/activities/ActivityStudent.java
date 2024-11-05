@@ -55,7 +55,7 @@ public class ActivityStudent extends AppCompatActivity {
 
         // Specify top-level destinations
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_messages, R.xml.root_preferences)
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_messages_activity, R.xml.root_preferences)
                 .build();
 
         // Set up the NavController
