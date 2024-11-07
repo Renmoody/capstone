@@ -66,8 +66,7 @@ public class UsersActivity extends AppCompatActivity implements UserListener {
                 } else {
                     showErrorMessage();
                 }
-            }
-            else {
+            } else {
                 showErrorMessage();
             }
         });

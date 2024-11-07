@@ -32,6 +32,23 @@ public class SignUp extends AppCompatActivity {
     private RadioGroup radioGroup;
     private String accountType;
     private String encodedImage;
+    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    if (result.getData() != null) {
+                        Uri imageUri = result.getData().getData();
+                        try {
+                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            binding.imageProfile.setImageBitmap(bitmap);
+                            binding.textAddImage.setVisibility(View.GONE);
+                            encodedImage = encodeImage(bitmap);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            });
     private PreferenceManager preferenceManager;
     private boolean accountSelected;
 
@@ -56,40 +73,32 @@ public class SignUp extends AppCompatActivity {
         if (encodedImage == null) {
             showToast("Select a profile Image");
             return false;
-        }
-        else if (!accountSelected) {
+        } else if (!accountSelected) {
             showToast("Select account type");
             return false;
-        }
-        else if (binding.inputEmail.getText().toString().trim().isEmpty()) {
+        } else if (binding.inputEmail.getText().toString().trim().isEmpty()) {
             showToast("Fill out email");
             return false;
-        }
-        else if (binding.inputName.getText().toString().trim().isEmpty()) {
+        } else if (binding.inputName.getText().toString().trim().isEmpty()) {
             showToast("Fill out name");
             return false;
-        }
-
-        else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
             showToast("Please input valid email address");
             return false;
-        }
-        else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
+        } else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
             showToast("Fill out password");
             return false;
-        }
-        else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
+        } else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
             showToast("Fill out confirm password");
             return false;
-        }
-        else if (!binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())) {
+        } else if (!binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())) {
             showToast("Passwords must match!");
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
+
     private void setListeners() {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -120,13 +129,12 @@ public class SignUp extends AppCompatActivity {
             }
         });
         binding.textLogIn.setOnClickListener(view ->
-            startActivity(new Intent(getApplicationContext(), LogIn.class)));
-       
+                startActivity(new Intent(getApplicationContext(), LogIn.class)));
+
     }
 
-
     private String encodeImage(Bitmap bitmap) {
-        int previewWidth =150;
+        int previewWidth = 150;
         int previewHeight = bitmap.getHeight() * previewWidth / bitmap.getWidth();
         Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWidth, previewHeight, false);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -134,23 +142,6 @@ public class SignUp extends AppCompatActivity {
         byte[] bytes = byteArrayOutputStream.toByteArray();
         return Base64.encodeToString(bytes, Base64.DEFAULT);
     }
-    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    if (result.getData() != null) {
-                        Uri imageUri = result.getData().getData();
-                        try {
-                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            binding.imageProfile.setImageBitmap(bitmap);
-                            binding.textAddImage.setVisibility(View.GONE);
-                            encodedImage = encodeImage(bitmap);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-    });
 
     private void setParams() {
         radioGroup = binding.accountTypeGroup;
@@ -160,8 +151,7 @@ public class SignUp extends AppCompatActivity {
         if (loading) {
             binding.buttonSignUp.setVisibility(View.INVISIBLE);
             binding.progressBar.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             binding.buttonSignUp.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.INVISIBLE);
         }
@@ -189,8 +179,7 @@ public class SignUp extends AppCompatActivity {
                     if (accountType.equals("student")) {
                         Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
                         startActivity(intent);
-                    }
-                    else if (accountType.equals("professor")) {
+                    } else if (accountType.equals("professor")) {
                         Intent intent = new Intent(getApplicationContext(), ActivityTeacher.class);
                         startActivity(intent);
                     }
@@ -199,7 +188,7 @@ public class SignUp extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     load(false);
                     Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-        });
+                });
     }
 
     @Override

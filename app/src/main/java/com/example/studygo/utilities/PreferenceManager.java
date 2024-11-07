@@ -2,9 +2,6 @@ package com.example.studygo.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
-
-import java.nio.file.Path;
 
 public class PreferenceManager {
     private final SharedPreferences sharedPreferences;
@@ -14,7 +11,7 @@ public class PreferenceManager {
     }
 
     public void putBool(String key, Boolean value) {
-        SharedPreferences.Editor editor =  sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(key, value);
         editor.apply();
     }

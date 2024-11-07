@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import com.example.studygo.R;
 
 public class PreferenceActivity extends AppCompatActivity {

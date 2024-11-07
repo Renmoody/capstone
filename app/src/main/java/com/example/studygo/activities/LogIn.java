@@ -50,20 +50,18 @@ public class LogIn extends AppCompatActivity {
         if (binding.inputEmail.getText().toString().trim().isEmpty()) {
             showToast("Enter email");
             return false;
-        }
-        else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(binding.inputEmail.getText().toString()).matches()) {
             showToast("Invalid Email");
             return false;
-        }
-        else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
+        } else if (binding.inputPassword.getText().toString().trim().isEmpty()) {
             showToast("Enter password");
             return false;
-        }
-        else {
+        } else {
             return true;
         }
 
     }
+
     private void setListeners() {
         binding.textCreateNewAccount.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), SignUp.class)));
         binding.textForgotPassword.setOnClickListener(view -> {
@@ -71,8 +69,7 @@ public class LogIn extends AppCompatActivity {
             if (!binding.inputEmail.getText().toString().isEmpty()) {
                 auth.sendPasswordResetEmail(Objects.requireNonNull(email));
                 Toast.makeText(getApplicationContext(), "Password reset link sent!", Toast.LENGTH_SHORT).show();
-            }
-            else
+            } else
                 Toast.makeText(getApplicationContext(), "Please fill out email section", Toast.LENGTH_SHORT).show();
         });
         binding.buttonSignIn.setOnClickListener(view -> {
@@ -81,19 +78,31 @@ public class LogIn extends AppCompatActivity {
         });
         binding.inputEmail.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {email = charSequence.toString();}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                email = charSequence.toString();
+            }
+
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
         binding.inputPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {password = charSequence.toString();}
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                password = charSequence.toString();
+            }
+
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+            }
         });
     }
 
@@ -114,8 +123,7 @@ public class LogIn extends AppCompatActivity {
                         preferenceManager.putString(Constants.KEY_ACCOUNT_TYPE, ds.getString(Constants.KEY_ACCOUNT_TYPE));
                         accountType = preferenceManager.getString(Constants.KEY_ACCOUNT_TYPE);
                         launch();
-                    }
-                    else {
+                    } else {
                         load(false);
                         showToast("Invalid Username or Password");
                     }
@@ -124,12 +132,12 @@ public class LogIn extends AppCompatActivity {
 
     private void launch() {
         switch (accountType) {
-            case "student" :
+            case "student":
                 Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 break;
-            case "professor" :
+            case "professor":
                 Intent intentProfessor = new Intent(getApplicationContext(), ActivityTeacher.class);
                 intentProfessor.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intentProfessor);
@@ -140,8 +148,7 @@ public class LogIn extends AppCompatActivity {
         if (loading) {
             binding.buttonSignIn.setVisibility(View.INVISIBLE);
             binding.progressBar.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             binding.buttonSignIn.setVisibility(View.VISIBLE);
             binding.progressBar.setVisibility(View.INVISIBLE);
         }

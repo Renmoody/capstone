@@ -1,38 +1,22 @@
 package com.example.studygo.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Base64;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-
-import com.example.studygo.R;
-import com.example.studygo.databinding.ActivityStudentBinding;
-import com.example.studygo.utilities.Constants;
-import com.example.studygo.utilities.PreferenceManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import com.google.firebase.auth.FirebaseUser;
+
+import com.example.studygo.R;
+import com.example.studygo.databinding.ActivityStudentBinding;
+import com.example.studygo.utilities.Constants;
+import com.example.studygo.utilities.PreferenceManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingService;
 
 public class ActivityStudent extends AppCompatActivity {
 
@@ -74,7 +58,7 @@ public class ActivityStudent extends AppCompatActivity {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
 
-//    Reduce redundancy and also for testing
+    //    Reduce redundancy and also for testing
     private void showToast(String m) {
         Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
     }
@@ -94,8 +78,8 @@ public class ActivityStudent extends AppCompatActivity {
         documentReference
                 .update(Constants.KEY_FCM_TOKEN, token)
                 .addOnSuccessListener(unused ->
-                showToast("Token updated Successfully")).addOnFailureListener(e ->
-                showToast("Token failed to update"));
+                        showToast("Token updated Successfully")).addOnFailureListener(e ->
+                        showToast("Token failed to update"));
     }
 
 }

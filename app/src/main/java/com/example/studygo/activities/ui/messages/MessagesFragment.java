@@ -36,52 +36,6 @@ public class MessagesFragment extends AppCompatActivity {
     private User receiverUser;
     private List<ChatMessage> chatMessages;
     private ChatAdapter chatAdapter;
-    private FirebaseFirestore db;
-    private PreferenceManager preferenceManager;
-    @Override
-    protected void onCreate(@Nullable android.os.Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = FragmentMessagesBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        setListeners();
-        loadReceiver();
-        init();
-        listenMessages();
-    }
-
-    private void init() {
-        preferenceManager = new PreferenceManager(getApplicationContext());
-        chatMessages = new ArrayList<>();
-        chatAdapter = new ChatAdapter(
-                chatMessages,
-                getBitmapFromEncodedString(receiverUser.image),
-                preferenceManager.getString(Constants.KEY_USER_ID)
-                );
-        binding.chatRecyclerView.setAdapter(chatAdapter);
-        db = FirebaseFirestore.getInstance();
-    }
-
-    private void sendMessage() {
-        HashMap<String, Object> message = new HashMap<>();
-        message.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
-        message.put(Constants.KEY_RECIEVER_ID, receiverUser.id);
-        message.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
-        message.put(Constants.KEY_TIMESTAMP, new Date());
-        db.collection(Constants.KEY_COLLECTION_CHAT).add(message);
-        binding.inputMessage.setText(null);
-    }
-
-    private void listenMessages() {
-        db.collection(Constants.KEY_COLLECTION_CHAT)
-                .whereEqualTo(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
-                .whereEqualTo(Constants.KEY_RECIEVER_ID, receiverUser.id)
-                .addSnapshotListener(eventListener);
-        db.collection(Constants.KEY_COLLECTION_CHAT)
-                .whereEqualTo(Constants.KEY_SENDER_ID, receiverUser.id)
-                .whereEqualTo(Constants.KEY_RECIEVER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
-                .addSnapshotListener(eventListener);
-    }
-
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
         if (error != null) {
             return;
@@ -111,6 +65,52 @@ public class MessagesFragment extends AppCompatActivity {
         }
         binding.progressBar.setVisibility(View.GONE);
     };
+    private FirebaseFirestore db;
+    private PreferenceManager preferenceManager;
+
+    @Override
+    protected void onCreate(@Nullable android.os.Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = FragmentMessagesBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setListeners();
+        loadReceiver();
+        init();
+        listenMessages();
+    }
+
+    private void init() {
+        preferenceManager = new PreferenceManager(getApplicationContext());
+        chatMessages = new ArrayList<>();
+        chatAdapter = new ChatAdapter(
+                chatMessages,
+                getBitmapFromEncodedString(receiverUser.image),
+                preferenceManager.getString(Constants.KEY_USER_ID)
+        );
+        binding.chatRecyclerView.setAdapter(chatAdapter);
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void sendMessage() {
+        HashMap<String, Object> message = new HashMap<>();
+        message.put(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+        message.put(Constants.KEY_RECIEVER_ID, receiverUser.id);
+        message.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+        message.put(Constants.KEY_TIMESTAMP, new Date());
+        db.collection(Constants.KEY_COLLECTION_CHAT).add(message);
+        binding.inputMessage.setText(null);
+    }
+
+    private void listenMessages() {
+        db.collection(Constants.KEY_COLLECTION_CHAT)
+                .whereEqualTo(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
+                .whereEqualTo(Constants.KEY_RECIEVER_ID, receiverUser.id)
+                .addSnapshotListener(eventListener);
+        db.collection(Constants.KEY_COLLECTION_CHAT)
+                .whereEqualTo(Constants.KEY_SENDER_ID, receiverUser.id)
+                .whereEqualTo(Constants.KEY_RECIEVER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
+                .addSnapshotListener(eventListener);
+    }
 
     private Bitmap getBitmapFromEncodedString(String encodedImage) {
         byte[] bytes = Base64.decode(encodedImage, Base64.DEFAULT);

@@ -1,6 +1,5 @@
 package com.example.studygo.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -20,23 +19,23 @@ public class SplashScreen extends AppCompatActivity {
         preferenceManager = new PreferenceManager(getApplicationContext());
         if (preferenceManager.getBool(Constants.KEY_IS_SIGNED_IN)) {
             launch();
-        }
-        else {
+        } else {
             Intent intent = new Intent(getApplicationContext(), LogIn.class);
             startActivity(intent);
             finish();
         }
 
     }
+
     private void launch() {
         String accountType = preferenceManager.getString(Constants.KEY_ACCOUNT_TYPE);
         switch (accountType) {
-            case "student" :
+            case "student":
                 Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 break;
-            case "professor" :
+            case "professor":
                 Intent intentProfessor = new Intent(getApplicationContext(), ActivityTeacher.class);
                 intentProfessor.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intentProfessor);

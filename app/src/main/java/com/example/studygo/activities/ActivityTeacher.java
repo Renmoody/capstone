@@ -1,27 +1,19 @@
 package com.example.studygo.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.example.studygo.R;
 import com.example.studygo.databinding.ActivityTeacherBinding;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import androidx.annotation.Nullable;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
-import androidx.preference.EditTextPreference;
-
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -67,8 +59,6 @@ public class ActivityTeacher extends AppCompatActivity {
     private void showToast(String m) {
         Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
     }
-
-
 
 
     private void getToken() {

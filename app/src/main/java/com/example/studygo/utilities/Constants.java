@@ -21,6 +21,9 @@ public class Constants {
     public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_EVENT_TIME = "eventTime";
     public static final String KEY_EVENT_DATE = "eventDate";
-//    Public 0, friends 1, private 2
-    public static final String KEY_EVENT_ACCESS = "0";
+    //    Public 0, friends 1, private 2
+    public static final String KEY_EVENT_ACCESS_PUBLIC = "0";
+    public static final String KEY_EVENT_ACCESS_FRIENDS = "1";
+    public static final String KEY_EVENT_ACCESS_PRIVATE = "2";
+
 }

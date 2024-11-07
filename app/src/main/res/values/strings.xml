@@ -45,4 +45,9 @@
     <string name="student">Student</string>
     <string name="professor">Professor</string>
     <string name="select_user">Select User</string>
+    <string name="session_details">Session Details</string>
+    <string name="session_name">Session name</string>
+    <string name="select">Select</string>
+    <string name="select_a_time">Select A Time</string>
+    <string name="select_a_date">Select A Date</string>
 </resources>

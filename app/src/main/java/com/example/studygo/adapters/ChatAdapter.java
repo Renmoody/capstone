@@ -15,12 +15,11 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    public static final int VIEW_TYPE_SENT = 1;
+    public static final int VIEW_TYPE_RECIEVED = 2;
     private final List<ChatMessage> chatMessages;
     private final Bitmap recieverProfileImage;
     private final String senderID;
-
-    public static final int VIEW_TYPE_SENT = 1;
-    public static final int VIEW_TYPE_RECIEVED = 2;
 
 
     public ChatAdapter(List<ChatMessage> chatMessages, Bitmap recieverProfileImage, String senderID) {
@@ -67,8 +66,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public int getItemViewType(int position) {
         if (chatMessages.get(position).senderID.equals(senderID)) {
             return VIEW_TYPE_SENT;
-        }
-        else {
+        } else {
             return VIEW_TYPE_RECIEVED;
         }
     }

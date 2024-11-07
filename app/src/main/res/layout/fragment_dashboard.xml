@@ -1,53 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="0dp"
-    tools:context=".activities.ui.dashboard.DashboardFragment"
+    android:animateLayoutChanges="true"
     android:background="@color/moss_green"
+    tools:context=".activities.ui.dashboard.DashboardFragment"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:layout_gravity="center_vertical">
 
 
     <TextView
-        android:id="@+id/calendarText"
+        android:id="@+id/textUpcomingEvents"
         android:layout_marginTop="@dimen/_16sdp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/upcoming_events"
         android:padding="@dimen/_6sdp"
-        android:textColor="@color/eerie_black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_20ssp"
         android:background="@drawable/text_view_rounded"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         android:textStyle="bold"
         />
 
-    <CalendarView
-        android:id="@+id/calendarView"
-        android:layout_marginTop="@dimen/_16sdp"
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="@dimen/_25sdp"
+        android:indeterminate="true"
+        android:indeterminateTintMode="src_atop"
+        android:indeterminateTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_5sdp"
-        android:weekDayTextAppearance="@style/CustomCalendarDateTextAppearance"
-        android:dateTextAppearance="@style/CustomCalendarDateTextAppearance"
-        android:background="@drawable/text_view_rounded"
-        android:theme="@style/CustomDatePickerDialog"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        android:padding="@dimen/_20sdp"
+        android:visibility="gone"
+        app:stackFromEnd="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textUpcomingEvents"
         />
 
-    <ListView
-        android:id="@+id/listOfEvents"
-        android:layout_width="match_parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabNewEvent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_marginBottom="@dimen/_6sdp"
-        android:layout_marginLeft="@dimen/_5sdp"
-        android:layout_marginRight="@dimen/_5sdp"
-        android:dividerHeight="@dimen/_6sdp"
-        android:divider="@color/moss_green"
+        android:layout_marginEnd="@dimen/_24sdp"
+        android:layout_marginBottom="@dimen/_50sdp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_add"
+        app:borderWidth="0dp"
+        app:tint="@color/white"
+        app:backgroundTint="@color/eerie_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        />
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

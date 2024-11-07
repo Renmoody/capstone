@@ -11,10 +11,10 @@ import java.util.List;
 
 public class DashboardViewModel extends ViewModel {
 
-    private final MutableLiveData<List<Event>> eventListLiveData;
+    private static final MutableLiveData<List<Event>> eventListLiveData = new MutableLiveData<>(new ArrayList<>());;
 
     public DashboardViewModel() {
-        eventListLiveData = new MutableLiveData<>(new ArrayList<>()); // Initialize with an empty list
+
     }
 
     public LiveData<List<Event>> getEventList() {

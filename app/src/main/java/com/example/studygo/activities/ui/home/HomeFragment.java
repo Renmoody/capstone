@@ -1,64 +1,122 @@
 package com.example.studygo.activities.ui.home;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.studygo.R;
+import com.example.studygo.activities.ui.dashboard.DashboardViewModel;
+import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentHomeBinding;
+import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
+import com.example.studygo.utilities.Constants;
+import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements EventListener {
 
-    private FragmentHomeBinding binding;
+    FragmentHomeBinding binding;
+    private EventAdapter eventAdapter;
+    private List<Event> events;
+    private PreferenceManager preferenceManager;
+    private FirebaseFirestore db;
+    private DashboardViewModel dashboardViewModel;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-//        TODO Populate homeviewmodel and somehow create "infinite scroll view for feed"
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        binding = FragmentHomeBinding.inflate(getLayoutInflater());
+        preferenceManager = new PreferenceManager(requireContext());
+        events = new ArrayList<>();
+        eventAdapter = new EventAdapter(events, this);
+        dashboardViewModel = new DashboardViewModel();
+        getEvents();
+        return binding.getRoot();
+    }
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+    private String getDate(Date date) {
+        return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
+    }
 
-        // Find the ListView by its ID
-//        ListView feedOfEvents = root.findViewById(R.id.feedOfEvents);
-//
-//        // Create sample event data
-////        TODO pull data from firebase, create algorithm that will populat events list with friends and professors public events
-//        ArrayList<Event> events = new ArrayList<>();
-//        // Hard coded events from ChatGPT for demonstration of UI
-//        events.add(new Event("Study Group", "Group study session on Java programming.", 1729286400000L, "3:00 PM"));
-//        events.add(new Event("Exam Prep", "Prepare for the upcoming midterm exams.", 1729286400000L, "11:00 AM"));
-//        events.add(new Event("Coding Bootcamp", "Intensive coding bootcamp for beginners.", 1729286400000L, "9:00 AM"));
-//        events.add(new Event("AI Workshop", "Learn the basics of Artificial Intelligence.", 1729286400000L, "2:00 PM"));
-//        events.add(new Event("Team Project Meetup", "Meet up for the final project discussion.", 1729286400000L, "4:00 PM"));
-//        events.add(new Event("Tech Talk", "Guest speaker on advancements in cloud computing.", 1729286400000L, "5:00 PM"));
-//        events.add(new Event("Networking Event", "Opportunity to network with industry professionals.", 1729286400000L, "6:00 PM"));
-//        events.add(new Event("App Development", "Build your first Android app with Kotlin.", 1729286400000L, "1:00 PM"));
-//        events.add(new Event("Hackathon", "24-hour coding challenge with great prizes.", 1729286400000L, "8:00 AM"));
-//        events.add(new Event("Machine Learning Seminar", "Introduction to machine learning algorithms.", 1729286400000L, "10:00 AM"));
+    private void showDialogue(Event event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Join Event?");
+        LinearLayout layout = new LinearLayout(requireContext());
+        builder.setView(layout);
 
-//        // Create an instance of the custom EventAdapter
-//        EventAdapter adapter = new EventAdapter(requireContext(), events);
-//
-//        // Set the adapter to the ListView
-//        feedOfEvents.setAdapter(adapter);
+        builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                events.add(event);
+                eventAdapter.notifyDataSetChanged();
+            }
+        }).setNegativeButton("Cancel", ((dialogInterface, i) ->
+                dialogInterface.dismiss()));
+        builder.show();
+    }
 
-        return root;
+    private void getEvents() {
+        loading(true);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constants.KEY_COLLECTION_EVENTS).get().addOnCompleteListener(task -> {
+            loading(false);
+            String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
+            if (task.isSuccessful() && task.getResult() != null) {
+                for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                    if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.getId())) continue;
+                    Event event = new Event();
+                    event.name = queryDocumentSnapshot.getString(Constants.KEY_NAME);
+                    event.details = queryDocumentSnapshot.getString(Constants.KEY_MESSAGE);
+                    event.date = getDate(queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE));
+                    event.dateObject = queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE);
+                    events.add(event);
+                }
+                if (!events.isEmpty()) {
+                    events.sort(Comparator.comparing(obj -> obj.dateObject));
+                    binding.eventRecyclerView.setAdapter(eventAdapter);
+                    binding.eventRecyclerView.setVisibility(View.VISIBLE);
+                } else {
+                    showErrorMessage();
+                }
+            } else {
+                showErrorMessage();
+            }
+        });
+    }
+
+    private void showErrorMessage() {
+        binding.textErrorMessage.setText(String.format("%s", "No Events available"));
+        binding.textErrorMessage.setVisibility(View.VISIBLE);
+    }
+
+    private void loading(Boolean isLoading) {
+        if (isLoading) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.progressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    public void onEventClicked(Event event) {
+        showDialogue(event);
     }
+
 }
