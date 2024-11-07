@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 import android.widget.ArrayAdapter;
 
 import com.example.studygo.R;
-import com.example.studygo.activities.ui.dashboard.Event;
+import com.example.studygo.models.Event;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,16 +45,16 @@ public class EventAdapter extends ArrayAdapter<Event> {
 
         // Populate the data into the template view using the event object
 
-
-        Date date = new Date(event.getEventDate());
-        // Create a SimpleDateFormat instance with the desired format (MM/dd/yyyy)
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
-        String formattedDate = dateFormat.format(date);
-
-        eventDate.setText(formattedDate);
-        eventTime.setText(event.getEventTime());
-        eventName.setText(event.getEventName());
-        eventDetails.setText(event.getEventTime());
+//
+//        Date date = new Date(event.getEventDate());
+//        // Create a SimpleDateFormat instance with the desired format (MM/dd/yyyy)
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
+//        String formattedDate = dateFormat.format(date);
+//
+//        eventDate.setText(formattedDate);
+//        eventTime.setText(event.getEventTime());
+//        eventName.setText(event.getEventName());
+//        eventDetails.setText(event.getEventTime());
 
         // Return the completed view to render on screen
         return convertView;

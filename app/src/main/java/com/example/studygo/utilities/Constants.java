@@ -1,10 +1,9 @@
 package com.example.studygo.utilities;
 
 public class Constants {
-    public static final String ERROR = "Error: check log";
     public static final String KEY_COLLECTION_USERS = "users";
     public static final String KEY_COLLECTION_FRIENDS = "friends";
-    public static final String KEY_USERNAME = "username";
+    public static final String KEY_COLLECTION_EVENTS = "events";
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";
@@ -20,5 +19,8 @@ public class Constants {
     public static final String KEY_RECIEVER_ID = "receiverID";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_TIMESTAMP = "timestamp";
-
+    public static final String KEY_EVENT_TIME = "eventTime";
+    public static final String KEY_EVENT_DATE = "eventDate";
+//    Public 0, friends 1, private 2
+    public static final String KEY_EVENT_ACCESS = "0";
 }

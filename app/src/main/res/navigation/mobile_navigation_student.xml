@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.studygo.activities.ui.home.HomeFragment"
+        android:name="com.example.studygo.activities.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
@@ -17,11 +17,7 @@
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
-    <fragment
-        android:id="@+id/navigation_messages"
-        android:name="com.example.studygo.activities.ui.messages.MessagesFragment"
-        android:label="@string/title_messages"
-        tools:layout="@layout/fragment_messages" />
+
     <activity
         android:id="@+id/navigation_messages_activity"
         android:name="com.example.studygo.activities.ActivityMessages"

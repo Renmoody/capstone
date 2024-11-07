@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.example.studygo.R;
 import com.example.studygo.activities.ui.messages.MessagesFragment;
 import com.example.studygo.adapters.UsersAdapter;
 import com.example.studygo.databinding.ActivityUsersBinding;
