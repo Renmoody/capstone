@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.studygo.activities.ui.dashboard.DashboardViewModel;
 import com.example.studygo.adapters.EventAdapter;
@@ -46,7 +47,7 @@ public class HomeFragment extends Fragment implements EventListener {
         preferenceManager = new PreferenceManager(requireContext());
         events = new ArrayList<>();
         eventAdapter = new EventAdapter(events, this);
-        dashboardViewModel = new DashboardViewModel();
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         getEvents();
         return binding.getRoot();
     }
@@ -64,7 +65,8 @@ public class HomeFragment extends Fragment implements EventListener {
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                events.add(event);
+                dashboardViewModel.addEvent(event);
+                events.remove(event);
                 eventAdapter.notifyDataSetChanged();
             }
         }).setNegativeButton("Cancel", ((dialogInterface, i) ->

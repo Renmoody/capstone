@@ -29,10 +29,10 @@ public class DashboardViewModel extends ViewModel {
         }
     }
 
-    public void updateEvent(Event event, int position) {
+    public void updateEvent(Event event) {
         List<Event> currentList = eventListLiveData.getValue();
-        if (currentList != null && position >= 0 && position < currentList.size()) {
-            currentList.set(position, event);
+        if (currentList != null) {
+            currentList.add(event);
             eventListLiveData.setValue(currentList);
         }
     }

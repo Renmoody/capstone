@@ -1,5 +1,7 @@
 package com.example.studygo.activities.ui.dashboard;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
@@ -16,9 +18,12 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.studygo.adapters.EventAdapter;
@@ -29,6 +34,7 @@ import com.example.studygo.utilities.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -45,101 +51,50 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         events = new ArrayList<>();
         eventAdapter = new EventAdapter(events, this);
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
+        setListeners();
+
+        dashboardViewModel.getEventList().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
+            @Override
+            public void onChanged(List<Event> updatedEvents) {
+                loading(false);
+                events.addAll(updatedEvents);
+                events.sort(Comparator.comparing(obj -> obj.dateObject));
+                binding.chatRecyclerView.setAdapter(eventAdapter);
+                binding.chatRecyclerView.setVisibility(View.VISIBLE);
+                eventAdapter.notifyDataSetChanged(); // Update adapter with new list
+            }
+        });
+
+
         return binding.getRoot();
     }
 
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    private ActivityResultLauncher<Intent> eventLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null && data.hasExtra("event")) {
+                        Event event = (Event) data.getSerializableExtra("event");
+                        Toast.makeText(requireContext(), "Event made", Toast.LENGTH_SHORT).show();
+                        dashboardViewModel.addEvent(event);
+                    }
+                }
+            });
 
-// Initialize ViewModel
-        dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-
-
-    }
-//TODO finsih setting up eventselector class and set up logic for adding new events to db
     private void setListeners() {
         binding.fabNewEvent.setOnClickListener(view -> {
-//            Intent intent = new Intent(requireContext(), EventSelector.class);
-//            startActivity(intent);
+            Intent intent = new Intent(requireContext(), EventSelector.class);
+            eventLauncher.launch(intent);
 
         });
-    }
-
-
-    private int mYear, mMonth, mDay, mHour, mMinute;
-
-    private void showEventDialog(int year, int month, int day) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Add New Event");
-
-        LinearLayout layout = new LinearLayout(requireContext());
-        layout.setOrientation(LinearLayout.VERTICAL);
-
-        final EditText eventTimeInput = new EditText(requireContext());
-        eventTimeInput.setHint("Event Time");
-        layout.addView(eventTimeInput);
-
-        final EditText eventNameInput = new EditText(requireContext());
-        eventNameInput.setHint("Event Name");
-        layout.addView(eventNameInput);
-
-        final EditText eventDetailsInput = new EditText(requireContext());
-        eventDetailsInput.setHint("Event Details (Optional)");
-        layout.addView(eventDetailsInput);
-
-        Spinner eventAccessInput = new Spinner(requireContext());
-
-        // Set up the options for the Spinner
-        String[] accessOptions = new String[]{"Public", "Private", "Friends Only"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, accessOptions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        eventAccessInput.setAdapter(adapter);
-        layout.addView(eventAccessInput);
-        final Calendar c = Calendar.getInstance();
-        mHour = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
-
-        // Launch Time Picker Dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(),
-                new TimePickerDialog.OnTimeSetListener() {
-
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
-
-                        eventTimeInput.setText(hourOfDay + ":" + minute);
-                    }
-                }, mHour, mMinute, false);
-        timePickerDialog.show();
-
-
-        builder.setView(layout);
-
-        builder.setPositiveButton("Register Event", (dialog, which) -> {
-            String eventName = eventNameInput.getText().toString();
-            String eventDetails = eventDetailsInput.getText().toString();
-            Date eventDate = getDate(year, month, day);
-            String eventTime = eventTimeInput.getText().toString();
-            String access = eventAccessInput.getSelectedItem().toString();
-            if (eventName.isEmpty() || eventTime.isEmpty()) {
-                Toast.makeText(getContext(), "Fill out required fields!", Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Event event = new Event(access, eventName, eventDetails, eventDate, eventTime);
-            dashboardViewModel.addEvent(event);  // Add event to ViewModel
-        });
-
-        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-
-        builder.show();
     }
 
     //    When clicking on an event in event list, this method is called and will
 //    prompt an event dialog where the user can edit the event contents
-    private void showEditEventDialog(Event event, int position) {
+    private void showEditEventDialog(Event event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Edit Event");
 
@@ -191,30 +146,23 @@ public class DashboardFragment extends Fragment implements EventListener {
                 event.setTime(updatedEventTime);
                 event.setAccess(updatedAccess);
 
-                dashboardViewModel.updateEvent(event, position); // Update event in ViewModel
+                dashboardViewModel.updateEvent(event); // Update event in ViewModel
                 adapter.notifyDataSetChanged(); // Notify adapter about changes
             }
         });
-        builder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dashboardViewModel.deleteEvent(position); // Update event in ViewModel
-                adapter.notifyDataSetChanged(); // Notify adapter about changes
-            }
-        });
+//        TODO finish deleting from viewmodel
+//        builder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                dashboardViewModel.deleteEvent(which); // Update event in ViewModel
+//                adapter.notifyDataSetChanged(); // Notify adapter about changes
+//            }
+//        });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
 
-    public Date getDate(int year, int month, int dayOfMonth) {
-        Date selectedDate;
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month, dayOfMonth, 0, 0, 0);
-        calendar.set(Calendar.MILLISECOND, 0); // Reset milliseconds for consistency
-        selectedDate = calendar.getTime();
-        return selectedDate;
-    }
 
     @Override
     public void onDestroyView() {
@@ -222,8 +170,16 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding = null;
     }
 
+    private void loading(Boolean isLoading) {
+        if (isLoading) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+        } else {
+            binding.progressBar.setVisibility(View.INVISIBLE);
+        }
+    }
+
     @Override
     public void onEventClicked(Event event) {
-
+        showEditEventDialog(event);
     }
 }
