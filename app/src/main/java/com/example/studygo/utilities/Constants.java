@@ -4,6 +4,7 @@ public class Constants {
     public static final String KEY_COLLECTION_USERS = "users";
     public static final String KEY_COLLECTION_FRIENDS = "friends";
     public static final String KEY_COLLECTION_EVENTS = "events";
+    public static final String KEY_USERNAME = "username";
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_PASSWORD = "password";

@@ -1,46 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/_12sdp"
-    android:background="@drawable/background_event_item"
-    android:orientation="vertical"
-    >
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/viewDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/headerBackground"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/moss_green"
+        app:layout_constraintBottom_toTopOf="@id/viewSupporter"
+        app:layout_constraintTop_toBottomOf="@id/viewDivider" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/imageMembers"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:background="@color/moss_green"
+        android:src="@drawable/ic_members"
+        android:tint="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textMembers" />
 
     <TextView
-        android:id="@+id/feed_event_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/date"
-        android:textColor="@color/eerie_black"
+        android:id="@+id/textMembers"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:padding="@dimen/_5sdp"
+        android:text="0"
+        android:textColor="@color/white"
         android:textSize="@dimen/_16ssp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/feed_event_time"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="@string/time"
-        android:textColor="@color/eerie_black"
-        android:textSize="@dimen/_16ssp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/feed_event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp"
         android:text="@string/event_name"
-        android:textColor="@color/eerie_black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_16ssp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/viewSupporter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/headerBackground" />
 
+    <View
+        android:id="@+id/viewSupporter"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:background="@color/moss_green"
+        app:layout_constraintTop_toBottomOf="@id/feed_event_name" />
 
-    <TextView
-        android:id="@+id/feed_event_details"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutFeedContent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="@string/event_details"
-        android:textColor="@color/eerie_black"
-        android:textSize="@dimen/_14ssp" />
-</LinearLayout>
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewSupporter">
+
+        <TextView
+            android:id="@+id/feed_event_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/date"
+            android:textColor="@color/eerie_black"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/feed_event_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/time"
+            android:textColor="@color/eerie_black"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/feed_event_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/event_details"
+            android:textColor="@color/eerie_black"
+            android:textSize="@dimen/_14ssp" />
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

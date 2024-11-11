@@ -4,17 +4,21 @@
     <EditTextPreference
         app:key="email"
         app:title="Email"
+        app:summary="@string/email"
+        app:defaultValue="@string/email"
+        app:useSimpleSummaryProvider="true"
         />
     <EditTextPreference
         app:key="username"
         app:title="@string/Username"
+        app:summary="@string/Username"
+        app:defaultValue="@string/Username"
+        app:useSimpleSummaryProvider="true"
         />
     <EditTextPreference
         app:key="password"
         app:title="@string/Password"
-        app:shouldDisableView="true"
-        android:defaultValue="@string/Password"
-        app:useSimpleSummaryProvider="true"
+        app:defaultValue="@string/Password"
         />
     </PreferenceCategory>
     <PreferenceCategory android:title="Preference Options">

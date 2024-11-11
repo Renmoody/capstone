@@ -3,7 +3,6 @@ package com.example.studygo.activities.ui.dashboard;
 import static android.app.Activity.RESULT_OK;
 
 import android.app.AlertDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,17 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,9 +29,7 @@ import com.example.studygo.models.Event;
 import com.example.studygo.utilities.PreferenceManager;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 public class DashboardFragment extends Fragment implements EventListener {
@@ -53,11 +47,11 @@ public class DashboardFragment extends Fragment implements EventListener {
         eventAdapter = new EventAdapter(events, this);
         dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         setListeners();
-
         dashboardViewModel.getEventList().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
             @Override
             public void onChanged(List<Event> updatedEvents) {
                 loading(false);
+                events.clear();
                 events.addAll(updatedEvents);
                 events.sort(Comparator.comparing(obj -> obj.dateObject));
                 binding.chatRecyclerView.setAdapter(eventAdapter);
@@ -88,6 +82,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding.fabNewEvent.setOnClickListener(view -> {
             Intent intent = new Intent(requireContext(), EventSelector.class);
             eventLauncher.launch(intent);
+
 
         });
     }
