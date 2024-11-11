@@ -53,6 +53,7 @@
             android:name="com.example.studygo.activities.ui.messages.MessagesFragment"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.example.studygo.activities.ui.dashboard.EventSelector" />
+        <activity android:name="com.example.studygo.activities.ActivityCompany" />
 
     </application>
 

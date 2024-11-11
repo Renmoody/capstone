@@ -110,11 +110,15 @@ public class SignUp extends AppCompatActivity {
                 }
                 if (accountSelect.equals("Professor")) {
                     accountSelected = true;
-                    accountType = "professor";
+                    accountType = Constants.KEY_ACCOUNT_TEACHER;
                 }
                 if (accountSelect.equals("Student")) {
                     accountSelected = true;
-                    accountType = "student";
+                    accountType = Constants.KEY_ACCOUNT_STUDNET;
+                }
+                if (accountSelect.equals("Company")) {
+                    accountSelected = true;
+                    accountType = Constants.KEY_ACCOUNT_COMPANY;
                 }
             }
         });
@@ -176,14 +180,26 @@ public class SignUp extends AppCompatActivity {
                     preferenceManager.putString(Constants.KEY_IMAGE, encodedImage);
                     preferenceManager.putString(Constants.KEY_ACCOUNT_TYPE, accountType);
                     preferenceManager.putString(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
-                    if (accountType.equals("student")) {
-                        Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
-                        startActivity(intent);
-                    } else if (accountType.equals("professor")) {
-                        Intent intent = new Intent(getApplicationContext(), ActivityTeacher.class);
-                        startActivity(intent);
+                    switch (accountType) {
+                        case "student": {
+                            Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
+                            startActivity(intent);
+                            finish();
+                            break;
+                        }
+                        case "professor": {
+                            Intent intent = new Intent(getApplicationContext(), ActivityTeacher.class);
+                            startActivity(intent);
+                            finish();
+                            break;
+                        }
+                        case "company": {
+                            Intent intent = new Intent(getApplicationContext(), ActivityCompany.class);
+                            startActivity(intent);
+                            finish();
+                            break;
+                        }
                     }
-
                 })
                 .addOnFailureListener(e -> {
                     load(false);

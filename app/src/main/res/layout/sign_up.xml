@@ -69,6 +69,14 @@
                 android:textColor="@color/primary_text"
                 android:layout_marginStart="@dimen/_16sdp"
                 android:textSize="@dimen/_13ssp" />
+            <RadioButton
+                android:id="@+id/radioCompany"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/company"
+                android:textColor="@color/primary_text"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:textSize="@dimen/_13ssp" />
         </RadioGroup>
 
         <EditText

@@ -2,7 +2,6 @@ package com.example.studygo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -35,11 +34,20 @@ public class SplashScreen extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), ActivityStudent.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
+                finish();
                 break;
             case "professor":
                 Intent intentProfessor = new Intent(getApplicationContext(), ActivityTeacher.class);
                 intentProfessor.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intentProfessor);
+                finish();
+                break;
+            case "company":
+                Intent intentCompany = new Intent(getApplicationContext(), ActivityCompany.class);
+                intentCompany.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intentCompany);
+                finish();
+                break;
         }
     }
 }
