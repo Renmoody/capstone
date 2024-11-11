@@ -1,5 +1,6 @@
 package com.example.studygo.activities.ui.home;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -63,10 +64,12 @@ public class HomeFragment extends Fragment implements EventListener {
         builder.setView(layout);
 
         builder.setPositiveButton("Join", new DialogInterface.OnClickListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                event.members++;
                 dashboardViewModel.addEvent(event);
-                events.remove(event);
+                updateFeed();
                 eventAdapter.notifyDataSetChanged();
             }
         }).setNegativeButton("Cancel", ((dialogInterface, i) ->
@@ -74,20 +77,25 @@ public class HomeFragment extends Fragment implements EventListener {
         builder.show();
     }
 
+    private void updateFeed() {
+
+    }
+
     private void getEvents() {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENTS).get().addOnCompleteListener(task -> {
             loading(false);
-            String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
             if (task.isSuccessful() && task.getResult() != null) {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                    loading(false);
                     if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.getId())) continue;
                     Event event = new Event();
                     event.name = queryDocumentSnapshot.getString(Constants.KEY_NAME);
                     event.details = queryDocumentSnapshot.getString(Constants.KEY_MESSAGE);
                     event.date = getDate(queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE));
                     event.dateObject = queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE);
+                    event.members = Integer.parseInt(String.valueOf(queryDocumentSnapshot.get(Constants.KEY_MEMBERS)));
                     events.add(event);
                 }
                 if (!events.isEmpty()) {

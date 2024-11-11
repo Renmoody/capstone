@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class Event implements Serializable {
     public String access, date, time, name, details;
+    public int members, id;
     public Date dateObject;
     public Event() {}
 
@@ -28,15 +29,10 @@ public class Event implements Serializable {
         this.details = details;
     }
 
+
+
     public void setDateObject(Date dateObject) {
         this.dateObject = dateObject;
     }
 
-    public Event(String access, String name, String details, Date date, String time) {
-        this.name = name;
-        this.details = details;
-        this.dateObject = date;
-        this.time = time;
-        this.access = access;
-    }
 }

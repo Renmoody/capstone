@@ -55,6 +55,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             binding.feedEventDate.setText(event.date);
             binding.feedEventName.setText(event.name);
             binding.feedEventDetails.setText(event.details);
+            binding.textMembers.setText(String.valueOf(event.members));
             binding.getRoot().setOnClickListener(view -> eventListener.onEventClicked(event));
         }
 

@@ -77,6 +77,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
                     email.setText(Objects.requireNonNull(document.get(Constants.KEY_EMAIL)).toString());
+                    username.setText(Objects.requireNonNull(document.get(Constants.KEY_NAME)).toString());
                     password.setText(Objects.requireNonNull(document.get(Constants.KEY_PASSWORD)).toString());
                 } else {
                     Log.d("DOCUMENT", "Doesnt exist");

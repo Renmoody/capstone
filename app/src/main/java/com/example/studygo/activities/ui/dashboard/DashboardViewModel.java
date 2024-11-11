@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel;
 import com.example.studygo.models.Event;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class DashboardViewModel extends ViewModel {
 
-    private static final MutableLiveData<List<Event>> eventListLiveData = new MutableLiveData<>(new ArrayList<>());;
+    private static final MutableLiveData<List<Event>> eventListLiveData = new MutableLiveData<>(new ArrayList<>());
+    ;
 
     public DashboardViewModel() {
 
@@ -32,7 +34,10 @@ public class DashboardViewModel extends ViewModel {
     public void updateEvent(Event event) {
         List<Event> currentList = eventListLiveData.getValue();
         if (currentList != null) {
-            currentList.add(event);
+            if (currentList.contains(event.id)) {
+                currentList.add(event);
+                currentList.sort(Comparator.comparing(obj -> obj.dateObject));
+            }
             eventListLiveData.setValue(currentList);
         }
     }

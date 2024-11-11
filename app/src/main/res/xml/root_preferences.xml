@@ -9,7 +9,7 @@
         app:useSimpleSummaryProvider="true"
         />
     <EditTextPreference
-        app:key="username"
+        app:key="name"
         app:title="@string/Username"
         app:summary="@string/Username"
         app:defaultValue="@string/Username"

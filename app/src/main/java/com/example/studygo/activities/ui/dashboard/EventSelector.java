@@ -5,7 +5,6 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -15,9 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.studygo.databinding.ActivityCreateEventBinding;
 import com.example.studygo.models.Event;
 
-import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class EventSelector extends AppCompatActivity {
     private ActivityCreateEventBinding binding;
@@ -48,13 +51,34 @@ public class EventSelector extends AppCompatActivity {
     }
 
     public void setEvent() {
-        event.name = binding.textSessionName.getText().toString();
-        event.time = binding.editTextSelectTime.getText().toString();
+        event.name = binding.editTextSessionName.getText().toString();
         event.details = binding.editTextSessionDetails.getText().toString();
-        event.date = binding.editTextSelectDate.getText().toString();
+        event.date = getDateFromString(binding.editTextSelectDate.getText().toString(), binding.editTextSelectTime.getText().toString());
         event.dateObject = date;
         event.access = binding.spinnerAccess.getSelectedItem().toString().toLowerCase();
         Log.d("Spinner", "Event access" + event.access);
+    }
+
+//    Chat GPT wrote this
+    private String getDateFromString(String dateStr, String timeStr) {
+        // Parse date (dd-MM-yyyy)
+        String[] dateParts = dateStr.split("-");
+        LocalDate date = LocalDate.of(
+                Integer.parseInt(dateParts[2]),   // Year
+                Integer.parseInt(dateParts[1]),   // Month
+                Integer.parseInt(dateParts[0])    // Day
+        );
+        // Parse time (HH:mm)
+        String[] timeParts = timeStr.split(":");
+        LocalTime time = LocalTime.of(
+                Integer.parseInt(timeParts[0]),   // Hour
+                Integer.parseInt(timeParts[1])    // Minute
+        );
+        // Combine date and time
+        LocalDateTime dateTime = LocalDateTime.of(date, time);
+        // Format as "MMMM dd, yyyy - hh:mm a"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yy - hh:mm a", Locale.getDefault());
+        return dateTime.format(formatter);
     }
 
     private Boolean checkEvent() {

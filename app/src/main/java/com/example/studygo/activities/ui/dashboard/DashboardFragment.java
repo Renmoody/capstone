@@ -3,16 +3,20 @@ package com.example.studygo.activities.ui.dashboard;
 import static android.app.Activity.RESULT_OK;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -22,15 +26,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.studygo.R;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentDashboardBinding;
 import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.PreferenceManager;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class DashboardFragment extends Fragment implements EventListener {
 
@@ -50,16 +61,19 @@ public class DashboardFragment extends Fragment implements EventListener {
         dashboardViewModel.getEventList().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
             @Override
             public void onChanged(List<Event> updatedEvents) {
-                loading(false);
-                events.clear();
-                events.addAll(updatedEvents);
-                events.sort(Comparator.comparing(obj -> obj.dateObject));
-                binding.chatRecyclerView.setAdapter(eventAdapter);
-                binding.chatRecyclerView.setVisibility(View.VISIBLE);
-                eventAdapter.notifyDataSetChanged(); // Update adapter with new list
+                if (updatedEvents.isEmpty()) {
+                    loading(true);
+                } else {
+                    loading(false);
+                    events.clear();
+                    events.addAll(updatedEvents);
+                    events.sort(Comparator.comparing(obj -> obj.dateObject));
+                    binding.chatRecyclerView.setAdapter(eventAdapter);
+                    binding.chatRecyclerView.setVisibility(View.VISIBLE);
+                    eventAdapter.notifyDataSetChanged(); // Update adapter with new list
+                }
             }
         });
-
 
         return binding.getRoot();
     }
@@ -79,6 +93,7 @@ public class DashboardFragment extends Fragment implements EventListener {
             });
 
     private void setListeners() {
+        loading(true);
         binding.fabNewEvent.setOnClickListener(view -> {
             Intent intent = new Intent(requireContext(), EventSelector.class);
             eventLauncher.launch(intent);
@@ -95,11 +110,19 @@ public class DashboardFragment extends Fragment implements EventListener {
 
         LinearLayout layout = new LinearLayout(requireContext());
         layout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout layout1 = new LinearLayout(requireContext());
+        layout1.setOrientation(LinearLayout.HORIZONTAL);
 
         final EditText eventTimeInput = new EditText(requireContext());
         eventTimeInput.setHint("Event Time");
         eventTimeInput.setText(event.time);
-        layout.addView(eventTimeInput);
+        layout1.addView(eventTimeInput);
+
+        final Button timeButton = new Button(requireContext());
+        timeButton.setText(R.string.select);
+        timeButton.setOnClickListener(view -> showTime(eventTimeInput));
+        layout1.addView(timeButton);
+        layout.addView(layout1);
 
         final EditText eventNameInput = new EditText(requireContext());
         eventNameInput.setHint("Event Name");
@@ -118,6 +141,7 @@ public class DashboardFragment extends Fragment implements EventListener {
                 android.R.layout.simple_spinner_item, accessOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         eventAccessInput.setAdapter(adapter);
+        layout.addView(eventAccessInput);
 
         builder.setView(layout);
 
@@ -130,6 +154,8 @@ public class DashboardFragment extends Fragment implements EventListener {
                 String updatedEventTime = eventTimeInput.getText().toString();
                 String updatedAccess = eventAccessInput.getSelectedItem().toString();
 
+
+
                 if (updatedEventName.isEmpty() || updatedEventTime.isEmpty()) {
                     Toast.makeText(getContext(), "Please fill out required fields!", Toast.LENGTH_SHORT).show();
                     return;
@@ -140,6 +166,7 @@ public class DashboardFragment extends Fragment implements EventListener {
                 event.setDetails(updatedEventDetails);
                 event.setTime(updatedEventTime);
                 event.setAccess(updatedAccess);
+
 
                 dashboardViewModel.updateEvent(event); // Update event in ViewModel
                 adapter.notifyDataSetChanged(); // Notify adapter about changes
@@ -173,8 +200,35 @@ public class DashboardFragment extends Fragment implements EventListener {
         }
     }
 
+
     @Override
     public void onEventClicked(Event event) {
         showEditEventDialog(event);
     }
+
+    private void showTime(EditText editTextSelectTime) {
+        // Get Current Time
+        final Calendar c = Calendar.getInstance();
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
+
+        // Launch Time Picker Dialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(),
+                new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,
+                                          int minute) {
+
+                        editTextSelectTime.setText(String.format("%d:%d", hourOfDay, minute));
+                    }
+                }, mHour, mMinute, false);
+        timePickerDialog.show();
+    }
+
+    private String getDate(Date date) {
+        return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
+    }
+
+
 }

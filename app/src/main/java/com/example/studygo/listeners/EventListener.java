@@ -5,4 +5,5 @@ import com.example.studygo.models.Event;
 
 public interface EventListener {
     void onEventClicked(Event event);
+
 }
