@@ -26,6 +26,10 @@ public class Constants {
     public static final String KEY_MEMBERS = "members";
     //    Public 0, friends 1, private 2
     public static final String KEY_EVENT_ACCESS = "eventAccess";
+    public static final String KEY_EVENT_ACCESS_PUBLIC = "public";
+    public static final String KEY_EVENT_ACCESS_FRIENDS = "friendsOnly";
+    public static final String KEY_EVENT_ACCESS_PRIVATE = "private";
+
     public static final String KEY_EVENT_NAME = "eventName";
     public static final String KEY_EVENT_DETAILS = "eventDetails";
     public static final String KEY_EVENT_TIME = "eventTime";

@@ -89,11 +89,14 @@ public class DashboardFragment extends Fragment implements EventListener {
                     Intent data = result.getData();
                     if (data != null && data.hasExtra("event")) {
                         Event event = (Event) data.getSerializableExtra("event");
-                        publishEvent(event);
-                        dashboardViewModel.addEvent(event);
+                        if (event != null) {
+                            publishEvent(event);
+                            dashboardViewModel.addEvent(event);
+                        }
                     }
                 }
             });
+
 
     private void publishEvent(Event e) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -101,7 +104,9 @@ public class DashboardFragment extends Fragment implements EventListener {
         event.put(Constants.KEY_EVENT_NAME, e.name);
         event.put(Constants.KEY_EVENT_DETAILS, e.details);
         event.put(Constants.KEY_EVENT_ACCESS, e.access);
-        event.put(Constants.KEY_EVENT_TIME, e.time);
+        event.put(Constants.KEY_EVENT_DATE, e.dateObject);
+        event.put(Constants.KEY_MEMBERS, e.members);
+        db.collection(Constants.KEY_COLLECTION_EVENTS).add(event);
 
 
     }
@@ -167,7 +172,6 @@ public class DashboardFragment extends Fragment implements EventListener {
                 String updatedEventDetails = eventDetailsInput.getText().toString();
                 String updatedEventTime = eventTimeInput.getText().toString();
                 String updatedAccess = eventAccessInput.getSelectedItem().toString();
-
 
 
                 if (updatedEventName.isEmpty() || updatedEventTime.isEmpty()) {
