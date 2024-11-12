@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studygo.databinding.ActivityCreateEventBinding;
 import com.example.studygo.models.Event;
+import com.google.firebase.Timestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,10 +52,11 @@ public class EventSelector extends AppCompatActivity {
     }
 
     public void setEvent() {
+        Timestamp timestamp = new Timestamp(date);
         event.name = binding.editTextSessionName.getText().toString();
         event.details = binding.editTextSessionDetails.getText().toString();
         event.date = getDateFromString(binding.editTextSelectDate.getText().toString(), binding.editTextSelectTime.getText().toString());
-        event.dateObject = date;
+        event.dateObject = timestamp.toDate();
         event.access = binding.spinnerAccess.getSelectedItem().toString().toLowerCase();
         Log.d("Spinner", "Event access" + event.access);
     }
