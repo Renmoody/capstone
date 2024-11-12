@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment implements EventListener {
             if (task.isSuccessful() && task.getResult() != null) {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                     loading(false);
-                    if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.getId())) continue;
+                    if (queryDocumentSnapshot.getId().equals("0")) continue;
                     Event event = new Event();
                     event.name = queryDocumentSnapshot.getString(Constants.KEY_NAME);
                     event.details = queryDocumentSnapshot.getString(Constants.KEY_MESSAGE);
