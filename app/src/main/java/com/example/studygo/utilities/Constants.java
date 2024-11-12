@@ -23,12 +23,16 @@ public class Constants {
     public static final String KEY_RECIEVER_ID = "receiverID";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_TIMESTAMP = "timestamp";
-    public static final String KEY_EVENT_TIME = "eventTime";
-    public static final String KEY_EVENT_DATE = "eventDate";
     public static final String KEY_MEMBERS = "members";
     //    Public 0, friends 1, private 2
-    public static final String KEY_EVENT_ACCESS_PUBLIC = "0";
-    public static final String KEY_EVENT_ACCESS_FRIENDS = "1";
-    public static final String KEY_EVENT_ACCESS_PRIVATE = "2";
+    public static final String KEY_EVENT_ACCESS = "eventAccess";
+    public static final String KEY_EVENT_NAME = "eventName";
+    public static final String KEY_EVENT_DETAILS = "eventDetails";
+    public static final String KEY_EVENT_TIME = "eventTime";
+    public static final String KEY_EVENT_ID = "eventId";
+    public static final String KEY_EVENT_DATE = "eventDate";
+    public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
+
+
 
 }

@@ -31,7 +31,9 @@ import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentDashboardBinding;
 import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
+import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -40,6 +42,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -86,11 +89,22 @@ public class DashboardFragment extends Fragment implements EventListener {
                     Intent data = result.getData();
                     if (data != null && data.hasExtra("event")) {
                         Event event = (Event) data.getSerializableExtra("event");
-                        Toast.makeText(requireContext(), "Event made", Toast.LENGTH_SHORT).show();
+                        publishEvent(event);
                         dashboardViewModel.addEvent(event);
                     }
                 }
             });
+
+    private void publishEvent(Event e) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Object> event = new HashMap<>();
+        event.put(Constants.KEY_EVENT_NAME, e.name);
+        event.put(Constants.KEY_EVENT_DETAILS, e.details);
+        event.put(Constants.KEY_EVENT_ACCESS, e.access);
+        event.put(Constants.KEY_EVENT_TIME, e.time);
+
+
+    }
 
     private void setListeners() {
         loading(true);
