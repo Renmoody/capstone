@@ -59,6 +59,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         events = new ArrayList<>();
         eventAdapter = new EventAdapter(events, this);
+        preferenceManager = new PreferenceManager(requireContext());
         dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         setListeners();
         dashboardViewModel.getEventList().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
@@ -101,14 +102,17 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void publishEvent(Event e) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         HashMap<String, Object> event = new HashMap<>();
+        HashMap<String, Object> register = new HashMap<>();
         event.put(Constants.KEY_EVENT_NAME, e.name);
         event.put(Constants.KEY_EVENT_DETAILS, e.details);
         event.put(Constants.KEY_EVENT_ACCESS, e.access);
         event.put(Constants.KEY_EVENT_DATE, e.dateObject);
         event.put(Constants.KEY_MEMBERS, e.members);
-        db.collection(Constants.KEY_COLLECTION_EVENTS).add(event);
-
-
+        db.collection(Constants.KEY_COLLECTION_EVENTS).add(event).addOnSuccessListener(documentReference -> {
+            register.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+            register.put(Constants.KEY_EVENT_ID, documentReference.getId());
+            db.collection(Constants.KEY_COLLECTION_EVENT_USERS).add(register);
+        });
     }
 
     private void setListeners() {
