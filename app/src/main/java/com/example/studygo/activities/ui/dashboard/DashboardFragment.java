@@ -33,6 +33,8 @@ import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -49,6 +51,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class DashboardFragment extends Fragment implements EventListener {
@@ -66,7 +69,6 @@ public class DashboardFragment extends Fragment implements EventListener {
         preferenceManager = new PreferenceManager(requireContext());
         setListeners();
         getEvents();
-        addEvents(eventIds);
         return binding.getRoot();
     }
 
@@ -102,7 +104,6 @@ public class DashboardFragment extends Fragment implements EventListener {
         });
     }
 
-    private final List<String> eventIds = new ArrayList<>();
 
     private void getEvents() {
         loading(true);
@@ -113,14 +114,7 @@ public class DashboardFragment extends Fragment implements EventListener {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                     if (!Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_USER_ID)).toString().equals(preferenceManager.getString(Constants.KEY_USER_ID)))
                         continue;
-                    eventIds.add(Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_EVENT_ID)).toString());
-                }
-                if (!events.isEmpty()) {
-                    events.sort(Comparator.comparing(obj -> obj.dateObject));
-                    binding.eventRecyclerView.setAdapter(eventAdapter);
-                    binding.eventRecyclerView.setVisibility(View.VISIBLE);
-                } else {
-                    showErrorMessage();
+                    addEvent(Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_EVENT_ID)).toString());
                 }
             } else {
                 showErrorMessage();
@@ -128,29 +122,30 @@ public class DashboardFragment extends Fragment implements EventListener {
         });
     }
 
-    private void addEvents(List<String> eventIds) {
-        if (eventIds.isEmpty()) return;
+    private void addEvent(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference ref = db.collection(Constants.KEY_COLLECTION_EVENTS);
-        for (String id : eventIds) {
-            DocumentReference documentReference = ref.document(id);
-            documentReference.get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            loading(false);
-                            Event event = new Event();
-                            event.name = documentSnapshot.getString(Constants.KEY_EVENT_NAME);
-                            event.details = documentSnapshot.getString(Constants.KEY_EVENT_DETAILS);
-                            event.date = getDate(documentSnapshot.getDate(Constants.KEY_EVENT_DATE));
-                            event.dateObject = documentSnapshot.getDate(Constants.KEY_EVENT_DATE);
-                            event.members = Integer.parseInt(String.valueOf(documentSnapshot.get(Constants.KEY_MEMBERS)));
-                            event.id = documentSnapshot.getId();
-                            events.add(event);
-
-                        }
-                    }
-            );
-        }
+        db.collection(Constants.KEY_COLLECTION_EVENTS).document(eventId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                Log.d("TASK", documentSnapshot.toString());
+                loading(false);
+                Event event = new Event();
+                event.name = documentSnapshot.getString(Constants.KEY_EVENT_NAME);
+                event.details = documentSnapshot.getString(Constants.KEY_EVENT_DETAILS);
+                event.date = getDate(documentSnapshot.getDate(Constants.KEY_EVENT_DATE));
+                event.dateObject = documentSnapshot.getDate(Constants.KEY_EVENT_DATE);
+                event.members = Integer.parseInt(String.valueOf(documentSnapshot.get(Constants.KEY_MEMBERS)));
+                event.id = documentSnapshot.getId();
+                events.add(event);
+            }
+            if (!events.isEmpty()) {
+                events.sort(Comparator.comparing(obj -> obj.dateObject));
+                binding.eventRecyclerView.setAdapter(eventAdapter);
+                binding.eventRecyclerView.setVisibility(View.VISIBLE);
+            } else {
+                showErrorMessage();
+            }
+        });
     }
 
     private void setListeners() {
