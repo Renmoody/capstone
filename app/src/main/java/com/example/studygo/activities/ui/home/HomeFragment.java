@@ -22,12 +22,14 @@ import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,8 +70,9 @@ public class HomeFragment extends Fragment implements EventListener {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 event.members++;
-                dashboardViewModel.addEvent(event);
-                updateFeed();
+                db = FirebaseFirestore.getInstance();
+                db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(Constants.KEY_MEMBERS, event.members);
+                addUserToEvent(event);
                 eventAdapter.notifyDataSetChanged();
             }
         }).setNegativeButton("Cancel", ((dialogInterface, i) ->
@@ -77,9 +80,6 @@ public class HomeFragment extends Fragment implements EventListener {
         builder.show();
     }
 
-    private void updateFeed() {
-
-    }
 
     private void getEvents() {
         loading(true);
@@ -96,6 +96,7 @@ public class HomeFragment extends Fragment implements EventListener {
                     event.date = getDate(queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE));
                     event.dateObject = queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE);
                     event.members = Integer.parseInt(String.valueOf(queryDocumentSnapshot.get(Constants.KEY_MEMBERS)));
+                    event.id = queryDocumentSnapshot.getId();
                     events.add(event);
                 }
                 if (!events.isEmpty()) {
@@ -127,6 +128,15 @@ public class HomeFragment extends Fragment implements EventListener {
     @Override
     public void onEventClicked(Event event) {
         showDialogue(event);
+    }
+
+    private void addUserToEvent(Event event) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Object> eventUser = new HashMap<>();
+        eventUser.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+        eventUser.put(Constants.KEY_EVENT_ID, event.id);
+        db.collection(Constants.KEY_COLLECTION_EVENT_USERS).add(eventUser);
+
     }
 
 }

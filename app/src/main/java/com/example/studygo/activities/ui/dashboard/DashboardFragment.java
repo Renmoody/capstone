@@ -33,7 +33,11 @@ import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -45,11 +49,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class DashboardFragment extends Fragment implements EventListener {
 
     private FragmentDashboardBinding binding;
-    private DashboardViewModel dashboardViewModel;
     private EventAdapter eventAdapter;
     private List<Event> events;
     private PreferenceManager preferenceManager;
@@ -60,25 +64,9 @@ public class DashboardFragment extends Fragment implements EventListener {
         events = new ArrayList<>();
         eventAdapter = new EventAdapter(events, this);
         preferenceManager = new PreferenceManager(requireContext());
-        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         setListeners();
-        dashboardViewModel.getEventList().observe(getViewLifecycleOwner(), new Observer<List<Event>>() {
-            @Override
-            public void onChanged(List<Event> updatedEvents) {
-                if (updatedEvents.isEmpty()) {
-                    loading(true);
-                } else {
-                    loading(false);
-                    events.clear();
-                    events.addAll(updatedEvents);
-                    events.sort(Comparator.comparing(obj -> obj.dateObject));
-                    binding.chatRecyclerView.setAdapter(eventAdapter);
-                    binding.chatRecyclerView.setVisibility(View.VISIBLE);
-                    eventAdapter.notifyDataSetChanged(); // Update adapter with new list
-                }
-            }
-        });
-
+        getEvents();
+        addEvents(eventIds);
         return binding.getRoot();
     }
 
@@ -92,7 +80,6 @@ public class DashboardFragment extends Fragment implements EventListener {
                         Event event = (Event) data.getSerializableExtra("event");
                         if (event != null) {
                             publishEvent(event);
-                            dashboardViewModel.addEvent(event);
                         }
                     }
                 }
@@ -113,6 +100,57 @@ public class DashboardFragment extends Fragment implements EventListener {
             register.put(Constants.KEY_EVENT_ID, documentReference.getId());
             db.collection(Constants.KEY_COLLECTION_EVENT_USERS).add(register);
         });
+    }
+
+    private final List<String> eventIds = new ArrayList<>();
+
+    private void getEvents() {
+        loading(true);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constants.KEY_COLLECTION_EVENT_USERS).get().addOnCompleteListener(task -> {
+            loading(false);
+            if (task.isSuccessful() && task.getResult() != null) {
+                for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                    if (!Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_USER_ID)).toString().equals(preferenceManager.getString(Constants.KEY_USER_ID)))
+                        continue;
+                    eventIds.add(Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_EVENT_ID)).toString());
+                }
+                if (!events.isEmpty()) {
+                    events.sort(Comparator.comparing(obj -> obj.dateObject));
+                    binding.eventRecyclerView.setAdapter(eventAdapter);
+                    binding.eventRecyclerView.setVisibility(View.VISIBLE);
+                } else {
+                    showErrorMessage();
+                }
+            } else {
+                showErrorMessage();
+            }
+        });
+    }
+
+    private void addEvents(List<String> eventIds) {
+        if (eventIds.isEmpty()) return;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference ref = db.collection(Constants.KEY_COLLECTION_EVENTS);
+        for (String id : eventIds) {
+            DocumentReference documentReference = ref.document(id);
+            documentReference.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            loading(false);
+                            Event event = new Event();
+                            event.name = documentSnapshot.getString(Constants.KEY_EVENT_NAME);
+                            event.details = documentSnapshot.getString(Constants.KEY_EVENT_DETAILS);
+                            event.date = getDate(documentSnapshot.getDate(Constants.KEY_EVENT_DATE));
+                            event.dateObject = documentSnapshot.getDate(Constants.KEY_EVENT_DATE);
+                            event.members = Integer.parseInt(String.valueOf(documentSnapshot.get(Constants.KEY_MEMBERS)));
+                            event.id = documentSnapshot.getId();
+                            events.add(event);
+
+                        }
+                    }
+            );
+        }
     }
 
     private void setListeners() {
@@ -190,18 +228,17 @@ public class DashboardFragment extends Fragment implements EventListener {
                 event.setAccess(updatedAccess);
 
 
-                dashboardViewModel.updateEvent(event); // Update event in ViewModel
+//               TODO update database with updated values
                 adapter.notifyDataSetChanged(); // Notify adapter about changes
             }
         });
 //        TODO finish deleting from viewmodel
-//        builder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                dashboardViewModel.deleteEvent(which); // Update event in ViewModel
-//                adapter.notifyDataSetChanged(); // Notify adapter about changes
-//            }
-//        });
+        builder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.show();
@@ -221,7 +258,6 @@ public class DashboardFragment extends Fragment implements EventListener {
             binding.progressBar.setVisibility(View.INVISIBLE);
         }
     }
-
 
     @Override
     public void onEventClicked(Event event) {
@@ -252,5 +288,8 @@ public class DashboardFragment extends Fragment implements EventListener {
         return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
     }
 
-
+    private void showErrorMessage() {
+        binding.textErrorMessage.setText(String.format("%s", "No Events available"));
+        binding.textErrorMessage.setVisibility(View.VISIBLE);
+    }
 }
