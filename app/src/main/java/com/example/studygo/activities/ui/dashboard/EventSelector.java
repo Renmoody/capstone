@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studygo.databinding.ActivityCreateEventBinding;
 import com.example.studygo.models.Event;
+import com.example.studygo.utilities.Constants;
+import com.example.studygo.utilities.PreferenceManager;
 import com.google.firebase.Timestamp;
 
 import java.time.LocalDate;
@@ -25,13 +27,15 @@ import java.util.Locale;
 
 public class EventSelector extends AppCompatActivity {
     private ActivityCreateEventBinding binding;
-    public final Event event = new Event();
+    private final Event event = new Event();
+    private PreferenceManager preferenceManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCreateEventBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        preferenceManager = new PreferenceManager(getApplicationContext());
         setListeners();
     }
 
@@ -52,12 +56,14 @@ public class EventSelector extends AppCompatActivity {
     }
 
     public void setEvent() {
-        Timestamp timestamp = new Timestamp(date);
+        Timestamp timestamp = new Timestamp(c.getTime());
+
         event.name = binding.editTextSessionName.getText().toString();
         event.details = binding.editTextSessionDetails.getText().toString();
         event.date = getDateFromString(binding.editTextSelectDate.getText().toString(), binding.editTextSelectTime.getText().toString());
         event.dateObject = timestamp.toDate();
         event.access = binding.spinnerAccess.getSelectedItem().toString().toLowerCase();
+        event.authorId = preferenceManager.getString(Constants.KEY_USER_ID);
         Log.d("Spinner", "Event access" + event.access);
     }
 
@@ -109,9 +115,9 @@ public class EventSelector extends AppCompatActivity {
 
     private int mYear, mMonth, mDay, mHour, mMinute;
     private Date date;
-
+    private Calendar c;
     private void showCalendar() {
-        Calendar c = Calendar.getInstance();
+        c = Calendar.getInstance();
         mYear = c.get(Calendar.YEAR);
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
@@ -136,7 +142,6 @@ public class EventSelector extends AppCompatActivity {
 
     private void showTime() {
         // Get Current Time
-        final Calendar c = Calendar.getInstance();
         mHour = c.get(Calendar.HOUR_OF_DAY);
         mMinute = c.get(Calendar.MINUTE);
 
@@ -149,9 +154,12 @@ public class EventSelector extends AppCompatActivity {
                                           int minute) {
 
                         binding.editTextSelectTime.setText(hourOfDay + ":" + minute);
+                        c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        c.set(Calendar.MINUTE, minute);
                     }
                 }, mHour, mMinute, false);
         timePickerDialog.show();
+
     }
 
 }

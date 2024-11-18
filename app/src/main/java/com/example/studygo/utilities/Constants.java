@@ -36,6 +36,7 @@ public class Constants {
     public static final String KEY_EVENT_ID = "eventId";
     public static final String KEY_EVENT_DATE = "eventDate";
     public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
+    public static final String KEY_EVENT_AUTHOR_ID = "eventAuthorId";
 
 
 

@@ -4,7 +4,6 @@ import static android.app.Activity.RESULT_OK;
 
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,15 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.example.studygo.R;
 import com.example.studygo.adapters.EventAdapter;
@@ -33,21 +29,15 @@ import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -73,19 +63,17 @@ public class DashboardFragment extends Fragment implements EventListener {
     }
 
 
-    private ActivityResultLauncher<Intent> eventLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null && data.hasExtra("event")) {
-                        Event event = (Event) data.getSerializableExtra("event");
-                        if (event != null) {
-                            publishEvent(event);
-                        }
-                    }
+    private final ActivityResultLauncher<Intent> eventLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        if (result.getResultCode() == RESULT_OK) {
+            Intent data = result.getData();
+            if (data != null && data.hasExtra("event")) {
+                Event event = (Event) data.getSerializableExtra("event");
+                if (event != null) {
+                    publishEvent(event);
                 }
-            });
+            }
+        }
+    });
 
 
     private void publishEvent(Event e) {
@@ -97,6 +85,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         event.put(Constants.KEY_EVENT_ACCESS, e.access);
         event.put(Constants.KEY_EVENT_DATE, e.dateObject);
         event.put(Constants.KEY_MEMBERS, e.members);
+        event.put(Constants.KEY_EVENT_AUTHOR_ID, e.authorId);
         db.collection(Constants.KEY_COLLECTION_EVENTS).add(event).addOnSuccessListener(documentReference -> {
             register.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
             register.put(Constants.KEY_EVENT_ID, documentReference.getId());
@@ -125,8 +114,12 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void addEvent(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENTS).document(eventId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+            if (task.isSuccessful() && task.getResult() != null) {
                 DocumentSnapshot documentSnapshot = task.getResult();
+                if (!documentSnapshot.exists()) {
+                    showErrorMessage();
+                    return;
+                }
                 Log.d("TASK", documentSnapshot.toString());
                 loading(false);
                 Event event = new Event();
@@ -136,14 +129,13 @@ public class DashboardFragment extends Fragment implements EventListener {
                 event.dateObject = documentSnapshot.getDate(Constants.KEY_EVENT_DATE);
                 event.members = Integer.parseInt(String.valueOf(documentSnapshot.get(Constants.KEY_MEMBERS)));
                 event.id = documentSnapshot.getId();
+                event.authorId = preferenceManager.getString(Constants.KEY_USER_ID);
                 events.add(event);
             }
             if (!events.isEmpty()) {
-                events.sort(Comparator.comparing(obj -> obj.dateObject));
+                if (events.size() == 1) events.sort(Comparator.comparing(obj -> obj.dateObject));
                 binding.eventRecyclerView.setAdapter(eventAdapter);
                 binding.eventRecyclerView.setVisibility(View.VISIBLE);
-            } else {
-                showErrorMessage();
             }
         });
     }
@@ -193,8 +185,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         Spinner eventAccessInput = new Spinner(requireContext());
         // Set up the options for the Spinner
         String[] accessOptions = new String[]{"Public", "Private", "Friends Only"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, accessOptions);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, accessOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         eventAccessInput.setAdapter(adapter);
         layout.addView(eventAccessInput);
@@ -202,41 +193,39 @@ public class DashboardFragment extends Fragment implements EventListener {
         builder.setView(layout);
 
         // Save changes
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String updatedEventName = eventNameInput.getText().toString();
-                String updatedEventDetails = eventDetailsInput.getText().toString();
-                String updatedEventTime = eventTimeInput.getText().toString();
-                String updatedAccess = eventAccessInput.getSelectedItem().toString();
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String updatedEventName = eventNameInput.getText().toString();
+            String updatedEventDetails = eventDetailsInput.getText().toString();
+            String updatedEventTime = eventTimeInput.getText().toString();
+            String updatedAccess = eventAccessInput.getSelectedItem().toString();
 
 
-                if (updatedEventName.isEmpty() || updatedEventTime.isEmpty()) {
-                    Toast.makeText(getContext(), "Please fill out required fields!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                // Update the event object with new values
-                event.setName(updatedEventName);
-                event.setDetails(updatedEventDetails);
-                event.setTime(updatedEventTime);
-                event.setAccess(updatedAccess);
-
-
-//               TODO update database with updated values
-                adapter.notifyDataSetChanged(); // Notify adapter about changes
+            if (updatedEventName.isEmpty() || updatedEventTime.isEmpty()) {
+                Toast.makeText(getContext(), "Please fill out required fields!", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
-//        TODO finish deleting from viewmodel
-        builder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
+            // Update the event object with new values
+            event.setName(updatedEventName);
+            event.setDetails(updatedEventDetails);
+            event.setTime(updatedEventTime);
+            event.setAccess(updatedAccess);
+            adapter.notifyDataSetChanged(); // Notify adapter about changes
+            updateEvent(event);
         });
+        builder.setNeutralButton("Delete", (dialog, which) -> deleteEvent(event));
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.show();
+    }
+
+    private void updateEvent(Event event) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(Constants.KEY_EVENT_ACCESS, event.access);
+        updates.put(Constants.KEY_EVENT_DETAILS, event.details);
+        updates.put(Constants.KEY_EVENT_NAME, event.name);
+        db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(updates);
     }
 
 
@@ -246,6 +235,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding = null;
     }
 
+//    Toggles loading animation
     private void loading(Boolean isLoading) {
         if (isLoading) {
             binding.progressBar.setVisibility(View.VISIBLE);
@@ -254,9 +244,26 @@ public class DashboardFragment extends Fragment implements EventListener {
         }
     }
 
+//    Checks if the event the user clicked on is the author of it or not,
+//    if they are they have the ability to edit, if not they can simply unregister
     @Override
     public void onEventClicked(Event event) {
-        showEditEventDialog(event);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                DocumentSnapshot ds = task.getResult();
+                if (Objects.equals(ds.get(Constants.KEY_EVENT_AUTHOR_ID),
+                        preferenceManager.getString(Constants.KEY_USER_ID))) {
+                    showEditEventDialog(event);
+                } else {
+                    showEventDialog(event);
+                }
+            }
+        });
+    }
+
+    private void showEventDialog(Event event) {
+
     }
 
     private void showTime(EditText editTextSelectTime) {
@@ -266,16 +273,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         int mMinute = c.get(Calendar.MINUTE);
 
         // Launch Time Picker Dialog
-        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(),
-                new TimePickerDialog.OnTimeSetListener() {
-
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay,
-                                          int minute) {
-
-                        editTextSelectTime.setText(String.format("%d:%d", hourOfDay, minute));
-                    }
-                }, mHour, mMinute, false);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(), (view, hourOfDay, minute) -> editTextSelectTime.setText(String.format("%d:%d", hourOfDay, minute)), mHour, mMinute, false);
         timePickerDialog.show();
     }
 
@@ -287,4 +285,16 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
+
+    private void deleteEvent(Event event) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constants.KEY_COLLECTION_EVENTS)
+                .document(event.id).delete()
+                .addOnSuccessListener(task -> Toast.makeText(
+                requireContext(),
+                "Event Deleted",
+                Toast.LENGTH_SHORT
+        ).show());
+    }
+
 }
