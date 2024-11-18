@@ -29,9 +29,12 @@ import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -98,13 +101,14 @@ public class DashboardFragment extends Fragment implements EventListener {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENT_USERS).get().addOnCompleteListener(task -> {
-            loading(false);
             if (task.isSuccessful() && task.getResult() != null) {
+                loading(false);
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                     if (!Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_USER_ID)).toString().equals(preferenceManager.getString(Constants.KEY_USER_ID)))
                         continue;
                     addEvent(Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_EVENT_ID)).toString());
                 }
+
             } else {
                 showErrorMessage();
             }
@@ -114,13 +118,8 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void addEvent(String eventId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENTS).document(eventId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
+            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
-                if (!documentSnapshot.exists()) {
-                    showErrorMessage();
-                    return;
-                }
-                Log.d("TASK", documentSnapshot.toString());
                 loading(false);
                 Event event = new Event();
                 event.name = documentSnapshot.getString(Constants.KEY_EVENT_NAME);
@@ -133,9 +132,12 @@ public class DashboardFragment extends Fragment implements EventListener {
                 events.add(event);
             }
             if (!events.isEmpty()) {
-                if (events.size() == 1) events.sort(Comparator.comparing(obj -> obj.dateObject));
+                undoErrorMessage();
+                events.sort(Comparator.comparing(obj -> obj.dateObject));
                 binding.eventRecyclerView.setAdapter(eventAdapter);
                 binding.eventRecyclerView.setVisibility(View.VISIBLE);
+            } else {
+                showErrorMessage();
             }
         });
     }
@@ -194,28 +196,21 @@ public class DashboardFragment extends Fragment implements EventListener {
 
         // Save changes
         builder.setPositiveButton("Save", (dialog, which) -> {
-            String updatedEventName = eventNameInput.getText().toString();
-            String updatedEventDetails = eventDetailsInput.getText().toString();
-            String updatedEventTime = eventTimeInput.getText().toString();
-            String updatedAccess = eventAccessInput.getSelectedItem().toString();
-
-
-            if (updatedEventName.isEmpty() || updatedEventTime.isEmpty()) {
+            if (eventNameInput.getText().toString().isEmpty() ||
+                    eventTimeInput.getText().toString().isEmpty() ||
+                    eventDetailsInput.getText().toString().isEmpty()) {
                 Toast.makeText(getContext(), "Please fill out required fields!", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Update the event object with new values
-            event.setName(updatedEventName);
-            event.setDetails(updatedEventDetails);
-            event.setTime(updatedEventTime);
-            event.setAccess(updatedAccess);
-            adapter.notifyDataSetChanged(); // Notify adapter about changes
+            event.name = eventNameInput.getText().toString();
+            event.details = eventDetailsInput.getText().toString();
+            event.time = eventTimeInput.getText().toString();
+            event.access = eventAccessInput.getSelectedItem().toString();
+            adapter.notifyDataSetChanged();
             updateEvent(event);
         });
         builder.setNeutralButton("Delete", (dialog, which) -> deleteEvent(event));
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
-
         builder.show();
     }
 
@@ -235,7 +230,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         binding = null;
     }
 
-//    Toggles loading animation
+    //    Toggles loading animation
     private void loading(Boolean isLoading) {
         if (isLoading) {
             binding.progressBar.setVisibility(View.VISIBLE);
@@ -244,7 +239,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         }
     }
 
-//    Checks if the event the user clicked on is the author of it or not,
+    //    Checks if the event the user clicked on is the author of it or not,
 //    if they are they have the ability to edit, if not they can simply unregister
     @Override
     public void onEventClicked(Event event) {
@@ -263,7 +258,24 @@ public class DashboardFragment extends Fragment implements EventListener {
     }
 
     private void showEventDialog(Event event) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle("Want to exit?");
+        builder.setPositiveButton("Unregister", (dialogInterface, i) -> unregister(event));
+        builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
+        builder.show();
 
+    }
+
+    private void unregister(Event event) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection(Constants.KEY_COLLECTION_EVENT_USERS).whereEqualTo(
+                Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID)).whereEqualTo(
+                Constants.KEY_EVENT_ID, event.id);
+        query.get().addOnCompleteListener(task -> task.getResult().getDocuments().
+                forEach(documentSnapshot -> documentSnapshot.getReference().delete()));
+        Map<String, Object> update = new HashMap<>();
+        update.put(Constants.KEY_MEMBERS, event.members-1);
+        db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
     }
 
     private void showTime(EditText editTextSelectTime) {
@@ -281,6 +293,9 @@ public class DashboardFragment extends Fragment implements EventListener {
         return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
     }
 
+    private void undoErrorMessage() {
+        binding.textErrorMessage.setVisibility(View.INVISIBLE);
+    }
     private void showErrorMessage() {
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
@@ -291,10 +306,10 @@ public class DashboardFragment extends Fragment implements EventListener {
         db.collection(Constants.KEY_COLLECTION_EVENTS)
                 .document(event.id).delete()
                 .addOnSuccessListener(task -> Toast.makeText(
-                requireContext(),
-                "Event Deleted",
-                Toast.LENGTH_SHORT
-        ).show());
+                        requireContext(),
+                        "Event Deleted",
+                        Toast.LENGTH_SHORT
+                ).show());
     }
 
 }

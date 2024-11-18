@@ -80,7 +80,6 @@ public class HomeFragment extends Fragment implements EventListener {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENTS).get().addOnCompleteListener(task -> {
-            loading(false);
             if (task.isSuccessful() && task.getResult() != null) {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                     loading(false);
