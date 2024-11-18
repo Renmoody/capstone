@@ -4,14 +4,12 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.studygo.R;
-import com.example.studygo.activities.ui.dashboard.DashboardViewModel;
 import com.example.studygo.databinding.ActivityCompanyBinding;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
@@ -33,7 +31,6 @@ public class ActivityCompany extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         preferenceManager = new PreferenceManager(getApplicationContext());
-        DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
         // Set up the bottom navigation view
         BottomNavigationView navView = binding.navViewCompany; // Use the binding
 

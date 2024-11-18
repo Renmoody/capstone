@@ -12,9 +12,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
-import com.example.studygo.activities.ui.dashboard.DashboardViewModel;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentHomeBinding;
 import com.example.studygo.listeners.EventListener;
@@ -22,7 +20,6 @@ import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
@@ -40,7 +37,6 @@ public class HomeFragment extends Fragment implements EventListener {
     private List<Event> events;
     private PreferenceManager preferenceManager;
     private FirebaseFirestore db;
-    private DashboardViewModel dashboardViewModel;
 
     @Nullable
     @Override
@@ -50,7 +46,6 @@ public class HomeFragment extends Fragment implements EventListener {
         preferenceManager = new PreferenceManager(requireContext());
         events = new ArrayList<>();
         eventAdapter = new EventAdapter(events, this);
-        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         getEvents();
         return binding.getRoot();
     }
@@ -85,11 +80,11 @@ public class HomeFragment extends Fragment implements EventListener {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENTS).get().addOnCompleteListener(task -> {
-            loading(false);
             if (task.isSuccessful() && task.getResult() != null) {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                     loading(false);
                     if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))) continue;
+                    if (preferenceManager.getString(Constants.KEY_USER_ID).equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_AUTHOR_ID))) continue;;
                     Event event = new Event();
                     event.name = queryDocumentSnapshot.getString(Constants.KEY_EVENT_NAME);
                     event.details = queryDocumentSnapshot.getString(Constants.KEY_EVENT_DETAILS);

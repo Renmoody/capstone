@@ -42,7 +42,7 @@ public class UsersActivity extends AppCompatActivity implements UserListener {
     private void getUsers() {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Constants.KEY_COLLECTION_USERS).get().addOnCompleteListener(task -> {
+        db.collection(Constants.KEY_COLLECTION_USERS).whereEqualTo(Constants.KEY_ACCOUNT_TYPE, Constants.KEY_ACCOUNT_STUDNET).get().addOnCompleteListener(task -> {
             loading(false);
             String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
             if (task.isSuccessful() && task.getResult() != null) {
