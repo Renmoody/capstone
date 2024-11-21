@@ -26,6 +26,7 @@ import com.example.studygo.R;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentDashboardBinding;
 import com.example.studygo.listeners.EventListener;
+import com.example.studygo.models.Ad;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
@@ -74,9 +75,27 @@ public class DashboardFragment extends Fragment implements EventListener {
                 if (event != null) {
                     publishEvent(event);
                 }
+            } else if (data != null && data.hasExtra("ad")) {
+                Ad ad = (Ad) data.getSerializableExtra("ad");
+                if (ad != null) {
+                    publishAd(ad);
+                }
             }
         }
     });
+
+    private void publishAd(Ad a) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Object> ad = new HashMap<>();
+        ad.put(Constants.KEY_AD_NAME, a.name);
+        ad.put(Constants.KEY_AD_DETAILS, a.details);
+        ad.put(Constants.KEY_AD_AUTHOR_ID, a.authorId);
+        ad.put(Constants.KEY_AD_DATE_START, a.dateStart);
+        ad.put(Constants.KEY_AD_DATE_END, a.dateEnd);
+        db.collection(Constants.KEY_COLLECTION_ADS).add(ad).addOnSuccessListener(documentReference -> {
+            Toast.makeText(requireContext(), "Ad Created", Toast.LENGTH_SHORT).show();
+        });
+    }
 
 
     private void publishEvent(Event e) {
@@ -145,8 +164,14 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void setListeners() {
         loading(true);
         binding.fabNewEvent.setOnClickListener(view -> {
-            Intent intent = new Intent(requireContext(), EventSelector.class);
-            eventLauncher.launch(intent);
+            if (preferenceManager.getString(Constants.KEY_ACCOUNT_TYPE).equals(Constants.KEY_ACCOUNT_COMPANY)) {
+                Intent intent = new Intent(requireContext(), AdSelector.class);
+                eventLauncher.launch(intent);
+            } else {
+                Intent intent = new Intent(requireContext(), EventSelector.class);
+                eventLauncher.launch(intent);
+            }
+
 
 
         });

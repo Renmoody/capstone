@@ -48,14 +48,15 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+
     // Added implementation for JSCH
     implementation (libs.jsch)
 //    Added implementation for JDBC
-
 
     // Scalable size unit (Support for different screen sizes)
     implementation(libs.sdp.android)

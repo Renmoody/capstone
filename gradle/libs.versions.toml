@@ -12,6 +12,7 @@ lifecycleViewmodelKtx = "2.8.6"
 multidex = "2.0.1"
 mysqlConnectorJava = "8.0.32"
 mysqlConnectorJavaVersion = "8.0.33"
+mysqlMysqlConnectorJava = "8.0.22"
 navigationFragment = "2.8.1"
 navigationUi = "2.8.1"
 ojdbc8 = "19.3.0.0"
@@ -36,6 +37,7 @@ lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-lived
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
 mysql-connector-java = { module = "mysql:mysql-connector-java", version.ref = "mysqlConnectorJava" }
+mysql-connector-java-v8022 = { module = "mysql:mysql-connector-java", version.ref = "mysqlMysqlConnectorJava" }
 mysql-connector-java-v8033 = { module = "mysql:mysql-connector-java", version.ref = "mysqlConnectorJavaVersion" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }

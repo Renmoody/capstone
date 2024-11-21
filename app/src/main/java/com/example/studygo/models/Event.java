@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Event implements Serializable {
-    public String access, date, time, name, details, id, groupId, authorId;
+    public String access, date, time, name, details, id, groupId, authorId, hostingerId;
     public int members = 1;
     public Date dateObject;
     public Event() {}

@@ -4,6 +4,10 @@ public class Constants {
     public static final String KEY_COLLECTION_USERS = "users";
     public static final String KEY_COLLECTION_FRIENDS = "friends";
     public static final String KEY_COLLECTION_EVENTS = "events";
+    public static final String KEY_COLLECTION_ADS = "ads";
+    public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
+    public static final String KEY_COLLECTION_CHAT = "chat";
+
     public static final String KEY_USERNAME = "username";
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";
@@ -18,7 +22,6 @@ public class Constants {
     public static final String KEY_ACCOUNT_COMPANY = "company";
     public static final String KEY_FCM_TOKEN = "fcmToken";
     public static final String KEY_USER = "user";
-    public static final String KEY_COLLECTION_CHAT = "chat";
     public static final String KEY_SENDER_ID = "senderID";
     public static final String KEY_RECIEVER_ID = "receiverID";
     public static final String KEY_MESSAGE = "message";
@@ -29,15 +32,19 @@ public class Constants {
     public static final String KEY_EVENT_ACCESS_PUBLIC = "public";
     public static final String KEY_EVENT_ACCESS_FRIENDS = "friendsOnly";
     public static final String KEY_EVENT_ACCESS_PRIVATE = "private";
-
     public static final String KEY_EVENT_NAME = "eventName";
     public static final String KEY_EVENT_DETAILS = "eventDetails";
     public static final String KEY_EVENT_TIME = "eventTime";
     public static final String KEY_EVENT_ID = "eventId";
     public static final String KEY_EVENT_DATE = "eventDate";
-    public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
     public static final String KEY_EVENT_AUTHOR_ID = "eventAuthorId";
 
+    public static final String KEY_AD_NAME = "adName";
+    public static final String KEY_AD_DETAILS = "adDetails";
+    public static final String KEY_AD_AUTHOR_ID = "adAuthorId";
+    public static final String KEY_AD_DATE_START = "adDateStart";
+    public static final String KEY_AD_DATE_END = "adDateEnd";
+    public static final String KEY_AD_ID = "adId";
 
 
 }
