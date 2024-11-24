@@ -27,9 +27,5 @@ public class ActivityMessages extends AppCompatActivity {
         binding.imageBack.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
         binding.fabNewChat.setOnClickListener(view ->
                 startActivity(new Intent(getApplicationContext(), UsersActivity.class)));
-        binding.imageFriends.setOnClickListener(view ->
-                startActivity(new Intent(getApplicationContext(), ActivityFriends.class)));
-        binding.imageRequests.setOnClickListener(view ->
-                startActivity(new Intent(getApplicationContext(), ActivityRequests.class)));
     }
 }

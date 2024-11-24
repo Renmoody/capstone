@@ -28,6 +28,7 @@ public class Constants {
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_MEMBERS = "members";
+    public static final String KEY_FRIEND_ID = "friendId";
     //    Public 0, friends 1, private 2
     public static final String KEY_EVENT_ACCESS = "eventAccess";
     public static final String KEY_EVENT_ACCESS_PUBLIC = "public";
