@@ -55,6 +55,9 @@
         <activity android:name="com.example.studygo.activities.ui.dashboard.EventSelector" />
         <activity android:name="com.example.studygo.activities.ActivityCompany" />
         <activity android:name="com.example.studygo.activities.ui.dashboard.AdSelector" />
+        <activity android:name="com.example.studygo.activities.ActivityRequests" />
+        <activity android:name="com.example.studygo.activities.ActivityFriends" />
+        <activity android:name="com.example.studygo.activities.ActivityAddFriend" />
 
     </application>
 

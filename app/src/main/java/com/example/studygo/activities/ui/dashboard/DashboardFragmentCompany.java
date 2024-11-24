@@ -47,6 +47,7 @@ public class DashboardFragmentCompany extends Fragment implements AdListener {
     }
 
     private void getAds() {
+
     }
 
     private final ActivityResultLauncher<Intent> adLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {

@@ -7,6 +7,7 @@ public class Constants {
     public static final String KEY_COLLECTION_ADS = "ads";
     public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
     public static final String KEY_COLLECTION_CHAT = "chat";
+    public static final String KEY_COLLECTION_FRIEND_REQUESTS = "friendRequests";
 
     public static final String KEY_USERNAME = "username";
     public static final String KEY_NAME = "name";
