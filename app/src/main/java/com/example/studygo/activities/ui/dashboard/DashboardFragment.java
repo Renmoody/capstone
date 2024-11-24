@@ -6,7 +6,6 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,16 +25,13 @@ import com.example.studygo.R;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentDashboardBinding;
 import com.example.studygo.listeners.EventListener;
-import com.example.studygo.models.Ad;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,27 +71,9 @@ public class DashboardFragment extends Fragment implements EventListener {
                 if (event != null) {
                     publishEvent(event);
                 }
-            } else if (data != null && data.hasExtra("ad")) {
-                Ad ad = (Ad) data.getSerializableExtra("ad");
-                if (ad != null) {
-                    publishAd(ad);
-                }
             }
         }
     });
-
-    private void publishAd(Ad a) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        HashMap<String, Object> ad = new HashMap<>();
-        ad.put(Constants.KEY_AD_NAME, a.name);
-        ad.put(Constants.KEY_AD_DETAILS, a.details);
-        ad.put(Constants.KEY_AD_AUTHOR_ID, a.authorId);
-        ad.put(Constants.KEY_AD_DATE_START, a.dateStart);
-        ad.put(Constants.KEY_AD_DATE_END, a.dateEnd);
-        db.collection(Constants.KEY_COLLECTION_ADS).add(ad).addOnSuccessListener(documentReference -> {
-            Toast.makeText(requireContext(), "Ad Created", Toast.LENGTH_SHORT).show();
-        });
-    }
 
 
     private void publishEvent(Event e) {
@@ -164,16 +142,8 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void setListeners() {
         loading(true);
         binding.fabNewEvent.setOnClickListener(view -> {
-            if (preferenceManager.getString(Constants.KEY_ACCOUNT_TYPE).equals(Constants.KEY_ACCOUNT_COMPANY)) {
-                Intent intent = new Intent(requireContext(), AdSelector.class);
-                eventLauncher.launch(intent);
-            } else {
-                Intent intent = new Intent(requireContext(), EventSelector.class);
-                eventLauncher.launch(intent);
-            }
-
-
-
+            Intent intent = new Intent(requireContext(), EventSelector.class);
+            eventLauncher.launch(intent);
         });
     }
 
@@ -299,7 +269,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         query.get().addOnCompleteListener(task -> task.getResult().getDocuments().
                 forEach(documentSnapshot -> documentSnapshot.getReference().delete()));
         Map<String, Object> update = new HashMap<>();
-        update.put(Constants.KEY_MEMBERS, event.members-1);
+        update.put(Constants.KEY_MEMBERS, event.members - 1);
         db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
     }
 
@@ -321,6 +291,7 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void undoErrorMessage() {
         binding.textErrorMessage.setVisibility(View.INVISIBLE);
     }
+
     private void showErrorMessage() {
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);

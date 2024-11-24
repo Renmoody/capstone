@@ -6,7 +6,7 @@
     app:startDestination="@id/navigation_dashboard">
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.studygo.activities.ui.dashboard.DashboardFragment"
+        android:name="com.example.studygo.activities.ui.dashboard.DashboardFragmentCompany"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
     <fragment

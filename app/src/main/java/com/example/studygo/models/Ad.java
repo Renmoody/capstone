@@ -8,4 +8,5 @@ public class Ad implements Serializable {
             Tuesday, Wednesday, Thursday, Friday,
             Saturday, Sunday, id, authorId, name, dateStart, dateEnd, details;
     public Date dateObjectStart, dateObjectEnd;
+    public Ad() {}
 }
