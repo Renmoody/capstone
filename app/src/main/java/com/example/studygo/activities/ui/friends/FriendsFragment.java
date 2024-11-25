@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,6 +20,7 @@ import com.example.studygo.listeners.UserListener;
 import com.example.studygo.models.User;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -103,7 +105,12 @@ public class FriendsFragment extends Fragment implements UserListener {
                     .get()
                     .addOnSuccessListener(userDocument -> {
                         if (userDocument.exists()) {
-                            User user = userDocument.toObject(User.class);
+                            User user = new User();
+                            user.name = userDocument.getString(Constants.KEY_NAME);
+                            user.email = userDocument.getString(Constants.KEY_EMAIL);
+                            user.image = userDocument.getString(Constants.KEY_IMAGE);
+                            user.token = userDocument.getString(Constants.KEY_FCM_TOKEN);
+                            user.id = userDocument.getId();
                             friends.add(user);
                         }
                         if (counter.incrementAndGet() == friendIds.size()) {
@@ -121,7 +128,7 @@ public class FriendsFragment extends Fragment implements UserListener {
     }
 
     private void showErrorMessage() {
-        binding.textErrorMessage.setText(String.format("%s", "No users available"));
+        binding.textErrorMessage.setText(String.format("%s", "No friends yet, click on the plus to make friend requests!"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
 
@@ -164,12 +171,38 @@ public class FriendsFragment extends Fragment implements UserListener {
 
     private void removeFriend(User user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Constants.KEY_COLLECTION_FRIENDS)
-                .whereEqualTo(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
-                .whereEqualTo(Constants.KEY_FRIEND_ID, user.id).get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+        String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
 
+        // First query: currentUserID is the sender, user.id is the friend
+        db.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_ID, currentUserID)
+                .whereEqualTo(Constants.KEY_FRIEND_ID, user.id)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                        for (DocumentSnapshot ds : task.getResult().getDocuments()) {
+                            ds.getReference().delete()
+                                    .addOnSuccessListener(aVoid -> Toast.makeText(requireContext(), "Friend removed successfully", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> Toast.makeText(requireContext(), "Error removing friend", Toast.LENGTH_SHORT).show());
+                        }
+                    }
+                });
+
+        // Second query: user.id is the sender, currentUserID is the friend
+        db.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_ID, user.id)
+                .whereEqualTo(Constants.KEY_FRIEND_ID, currentUserID)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
+                        for (DocumentSnapshot ds : task.getResult().getDocuments()) {
+                            ds.getReference().delete()
+                                    .addOnSuccessListener(aVoid -> Toast.makeText(requireContext(), "Friend removed successfully", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> Toast.makeText(requireContext(), "Error removing friend", Toast.LENGTH_SHORT).show());
+                        }
                     }
                 });
     }
+
+
 }

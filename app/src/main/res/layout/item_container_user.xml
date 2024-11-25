@@ -43,7 +43,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_8sdp"
-        android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/secondary_text"
         android:textSize="@dimen/_10ssp"

@@ -62,12 +62,22 @@ public class EventSelector extends AppCompatActivity {
         event.details = binding.editTextSessionDetails.getText().toString();
         event.date = getDateFromString(binding.editTextSelectDate.getText().toString(), binding.editTextSelectTime.getText().toString());
         event.dateObject = timestamp.toDate();
-        event.access = binding.spinnerAccess.getSelectedItem().toString().toLowerCase();
+        event.access = checkAccess(binding.spinnerAccess.getSelectedItem().toString().toLowerCase());
         event.authorId = preferenceManager.getString(Constants.KEY_USER_ID);
         Log.d("Spinner", "Event access" + event.access);
     }
 
-//    Chat GPT wrote this
+    private String checkAccess(String lowerCase) {
+        if (lowerCase.equals("friends only")) {
+            return Constants.KEY_EVENT_ACCESS_FRIENDS;
+        } else if (lowerCase.equals("public")) {
+            return Constants.KEY_EVENT_ACCESS_PUBLIC;
+        } else {
+            return Constants.KEY_EVENT_ACCESS_PRIVATE;
+        }
+    }
+
+    //    Chat GPT wrote this
     private String getDateFromString(String dateStr, String timeStr) {
         // Parse date (dd-MM-yyyy)
         String[] dateParts = dateStr.split("-");

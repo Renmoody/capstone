@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,8 +20,12 @@ import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,6 +34,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment implements EventListener {
 
@@ -79,33 +85,113 @@ public class HomeFragment extends Fragment implements EventListener {
     private void getEvents() {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
+        List<Task<Boolean>> friendCheckTasks = new ArrayList<>();
+        List<Event> tempEvents = new ArrayList<>();
+
         db.collection(Constants.KEY_COLLECTION_EVENTS).get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
                     loading(false);
-                    if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))) continue;
-                    if (preferenceManager.getString(Constants.KEY_USER_ID).equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_AUTHOR_ID))) continue;;
-                    Event event = new Event();
-                    event.name = queryDocumentSnapshot.getString(Constants.KEY_EVENT_NAME);
-                    event.details = queryDocumentSnapshot.getString(Constants.KEY_EVENT_DETAILS);
-                    event.date = getDate(queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE));
-                    event.dateObject = queryDocumentSnapshot.getDate(Constants.KEY_EVENT_DATE);
-                    event.members = Integer.parseInt(String.valueOf(queryDocumentSnapshot.get(Constants.KEY_MEMBERS)));
-                    event.id = queryDocumentSnapshot.getId();
-                    events.add(event);
+
+                    // Skip private events
+                    if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))) {
+                        continue;
+                    }
+
+                    // Handle friend-restricted events
+                    if (Constants.KEY_EVENT_ACCESS_FRIENDS.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))) {
+                        String authorId = queryDocumentSnapshot.getString(Constants.KEY_EVENT_AUTHOR_ID);
+
+                        Task<Boolean> friendCheckTask = checkInFriendsTask(authorId);
+                        friendCheckTasks.add(friendCheckTask.continueWith(task1 -> {
+                            if (task1.isSuccessful() && task1.getResult()) {
+                                // The author is a friend
+                                Event event = createEventFromSnapshot(queryDocumentSnapshot);
+                                tempEvents.add(event);
+                            }
+                            return task1.getResult();
+                        }));
+                    }
+
+                    // Add public events or events authored by the current user
+                    if (Constants.KEY_EVENT_ACCESS_PUBLIC.equalsIgnoreCase(Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS)).toString())) {
+                        Event event = createEventFromSnapshot(queryDocumentSnapshot);
+                        tempEvents.add(event);
+                    }
                 }
-                if (!events.isEmpty()) {
-                    events.sort(Comparator.comparing(obj -> obj.dateObject));
-                    binding.eventRecyclerView.setAdapter(eventAdapter);
-                    binding.eventRecyclerView.setVisibility(View.VISIBLE);
-                } else {
-                    showErrorMessage();
-                }
+
+                // Wait for all friend checks to complete
+                Tasks.whenAllComplete(friendCheckTasks).addOnCompleteListener(friendCheckTask -> {
+                    if (!tempEvents.isEmpty()) {
+                        events.clear();
+                        events.addAll(tempEvents);
+                        events.sort(Comparator.comparing(event -> event.dateObject));
+                        binding.eventRecyclerView.setAdapter(eventAdapter);
+                        binding.eventRecyclerView.setVisibility(View.VISIBLE);
+                    } else {
+                        showErrorMessage();
+                    }
+                });
             } else {
+                loading(false);
                 showErrorMessage();
             }
         });
     }
+
+    // Helper method to create an Event object from a Firestore document snapshot
+    private Event createEventFromSnapshot(QueryDocumentSnapshot snapshot) {
+        Event event = new Event();
+        event.name = snapshot.getString(Constants.KEY_EVENT_NAME);
+        event.details = snapshot.getString(Constants.KEY_EVENT_DETAILS);
+        event.date = getDate(snapshot.getDate(Constants.KEY_EVENT_DATE));
+        event.dateObject = snapshot.getDate(Constants.KEY_EVENT_DATE);
+        event.members = Integer.parseInt(String.valueOf(snapshot.get(Constants.KEY_MEMBERS)));
+        event.id = snapshot.getId();
+        return event;
+    }
+
+    // Method to check friend relationship as a Task
+    private Task<Boolean> checkInFriendsTask(String authorId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
+        TaskCompletionSource<Boolean> tcs = new TaskCompletionSource<>();
+
+        // Query 1: Check if the current user is the sender and authorId is the friend
+        Task<QuerySnapshot> query1 = db.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_ID, currentUserID)
+                .whereEqualTo(Constants.KEY_FRIEND_ID, authorId)
+                .get();
+
+        // Query 2: Check if authorId is the sender and the current user is the friend
+        Task<QuerySnapshot> query2 = db.collection(Constants.KEY_COLLECTION_FRIENDS)
+                .whereEqualTo(Constants.KEY_USER_ID, authorId)
+                .whereEqualTo(Constants.KEY_FRIEND_ID, currentUserID)
+                .get();
+
+        // Combine both queries
+        Tasks.whenAllComplete(query1, query2).addOnCompleteListener(task -> {
+            boolean isFriend = false;
+
+            // Check results from Query 1
+            if (query1.isSuccessful() && query1.getResult() != null && !query1.getResult().isEmpty()) {
+                isFriend = true;
+            }
+
+            // Check results from Query 2
+            if (query2.isSuccessful() && query2.getResult() != null && !query2.getResult().isEmpty()) {
+                isFriend = true;
+            }
+
+            // Set the result based on the findings
+            tcs.setResult(isFriend);
+        });
+
+        return tcs.getTask();
+    }
+
+
 
     private void showErrorMessage() {
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
@@ -131,6 +217,7 @@ public class HomeFragment extends Fragment implements EventListener {
         eventUser.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
         eventUser.put(Constants.KEY_EVENT_ID, event.id);
         db.collection(Constants.KEY_COLLECTION_EVENT_USERS).add(eventUser);
+        Toast.makeText(requireContext(), "Event Joined!", Toast.LENGTH_SHORT).show();
 
     }
 
