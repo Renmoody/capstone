@@ -85,7 +85,6 @@ public class HomeFragment extends Fragment implements EventListener {
     private void getEvents() {
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
         List<Task<Boolean>> friendCheckTasks = new ArrayList<>();
         List<Event> tempEvents = new ArrayList<>();
 
@@ -172,13 +171,7 @@ public class HomeFragment extends Fragment implements EventListener {
 
         // Combine both queries
         Tasks.whenAllComplete(query1, query2).addOnCompleteListener(task -> {
-            boolean isFriend = false;
-
-            // Check results from Query 1
-            if (query1.isSuccessful() && query1.getResult() != null && !query1.getResult().isEmpty()) {
-                isFriend = true;
-            }
-
+            boolean isFriend = query1.isSuccessful() && query1.getResult() != null && !query1.getResult().isEmpty();
             // Check results from Query 2
             if (query2.isSuccessful() && query2.getResult() != null && !query2.getResult().isEmpty()) {
                 isFriend = true;

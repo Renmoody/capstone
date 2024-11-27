@@ -123,14 +123,13 @@ public class EventSelector extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
     }
 
-    private int mYear, mMonth, mDay, mHour, mMinute;
     private Date date;
     private Calendar c;
     private void showCalendar() {
         c = Calendar.getInstance();
-        mYear = c.get(Calendar.YEAR);
-        mMonth = c.get(Calendar.MONTH);
-        mDay = c.get(Calendar.DAY_OF_MONTH);
+        int mYear = c.get(Calendar.YEAR);
+        int mMonth = c.get(Calendar.MONTH);
+        int mDay = c.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
                 (view, year, monthOfYear, dayOfMonth) -> {
@@ -152,8 +151,8 @@ public class EventSelector extends AppCompatActivity {
 
     private void showTime() {
         // Get Current Time
-        mHour = c.get(Calendar.HOUR_OF_DAY);
-        mMinute = c.get(Calendar.MINUTE);
+        int mHour = c.get(Calendar.HOUR_OF_DAY);
+        int mMinute = c.get(Calendar.MINUTE);
 
         // Launch Time Picker Dialog
         TimePickerDialog timePickerDialog = new TimePickerDialog(this,
