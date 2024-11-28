@@ -89,6 +89,8 @@ public class AdSelector extends AppCompatActivity {
         ad.dateEnd = getDateFromString(binding.editTextSelectEndDate.getText().toString(), binding.editTextSelectTime2.getText().toString());
         ad.dateObjectStart = timestamp.toDate();
         ad.authorId = preferenceManager.getString(Constants.KEY_USER_ID);
+        ad.members = "0";
+        setDays();
     }
 
     private Boolean checkAd() {
@@ -180,5 +182,29 @@ public class AdSelector extends AppCompatActivity {
                 }, mHour, mMinute, false);
         timePickerDialog.show();
 
+    }
+
+    private void setDays() {
+        if (binding.radioSunday.isChecked()) {
+            ad.Sunday = "true";
+        }
+        if (binding.radioMonday.isChecked()) {
+            ad.Monday = "true";
+        }
+        if (binding.radioTuesday.isChecked()) {
+            ad.Tuesday = "true";
+        }
+        if (binding.radioWednesday.isChecked()) {
+            ad.Wednesday = "true";
+        }
+        if (binding.radioThursday.isChecked()) {
+            ad.Thursday = "true";
+        }
+        if (binding.radioFriday.isChecked()) {
+            ad.Friday = "true";
+        }
+        if (binding.radioSaturday.isChecked()) {
+            ad.Saturday = "true";
+        }
     }
 }

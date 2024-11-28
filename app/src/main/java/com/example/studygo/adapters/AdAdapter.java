@@ -43,7 +43,7 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.AdViewHolder> {
     }
 
 
-    public static class AdViewHolder extends RecyclerView.ViewHolder {
+    public class AdViewHolder extends RecyclerView.ViewHolder {
         AdFeedItemBinding binding;
 
         public AdViewHolder(AdFeedItemBinding adFeedItemBinding) {
@@ -52,7 +52,11 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.AdViewHolder> {
         }
 
         private void setAdDetails(Ad ad) {
-//            binding.getRoot().setOnClickListener(view -> adListener.onAdClicked(ad));
+            binding.feedEventName.setText(ad.name);
+            binding.feedEventDate.setText(ad.dateStart);
+            binding.feedEventDetails.setText(ad.details);
+            binding.textMembers.setText(String.valueOf(ad.members));
+            binding.getRoot().setOnClickListener(view -> adListener.onAdClicked(ad));
         }
 
     }

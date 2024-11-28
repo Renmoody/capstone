@@ -47,6 +47,13 @@ public class Constants {
     public static final String KEY_AD_DATE_START = "adDateStart";
     public static final String KEY_AD_DATE_END = "adDateEnd";
     public static final String KEY_AD_ID = "adId";
+    public static final String KEY_AD_MONDAY = "monday";
+    public static final String KEY_AD_TUESDAY = "tuesday";
+    public static final String KEY_AD_WEDNESDAY = "wednesday";
+    public static final String KEY_AD_THURSDAY = "thursday";
+    public static final String KEY_AD_FRIDAY = "friday";
+    public static final String KEY_AD_SATURDAY = "saturday";
+    public static final String KEY_AD_SUNDAY = "sunday";
 
 
 }
