@@ -10,6 +10,8 @@ public class Constants {
     public static final String KEY_COLLECTION_FRIEND_REQUESTS = "friendRequests";
     public static final String KEY_COLLECTION_EVENT_CHATS = "eventChats";
 
+    public static final String KEY_ARRAY_REGISTERED_EVENTS = "registeredEvents";
+
     public static final String KEY_USERNAME = "username";
     public static final String KEY_NAME = "name";
     public static final String KEY_EMAIL = "email";

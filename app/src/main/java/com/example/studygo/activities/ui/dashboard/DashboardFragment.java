@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import com.example.studygo.listeners.EventListener;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -36,6 +39,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,7 +62,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         eventAdapter = new EventAdapter(events, this);
         preferenceManager = new PreferenceManager(requireContext());
         setListeners();
-        getEvents();
+        addEvents();
         return binding.getRoot();
     }
 
@@ -93,29 +97,27 @@ public class DashboardFragment extends Fragment implements EventListener {
         });
     }
 
-
-    private void getEvents() {
-        loading(true);
+    private void addEvents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Constants.KEY_COLLECTION_EVENT_USERS).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                loading(false);
-                for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                    if (!Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_USER_ID)).toString().equals(preferenceManager.getString(Constants.KEY_USER_ID)))
-                        continue;
-                    addEvent(Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_EVENT_ID)).toString());
+        CollectionReference ref = db.collection(Constants.KEY_COLLECTION_USERS);
+        DocumentReference df = ref.document(preferenceManager.getString(Constants.KEY_USER_ID));
+        df.get().addOnSuccessListener(documentSnapshot -> {
+            //noinspection unchecked
+            ArrayList<String> events = (ArrayList<String>) documentSnapshot.get(Constants.KEY_ARRAY_REGISTERED_EVENTS);
+            if (events != null) {
+                for (String event : events) {
+                    getEvent(event);
+                    Log.d("EVENTS", event.toString());
                 }
-
-            } else {
-                showErrorMessage();
             }
         });
+
     }
 
-    private void addEvent(String eventId) {
+    private void getEvent(String e) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(Constants.KEY_COLLECTION_EVENTS).document(eventId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+        db.collection(Constants.KEY_COLLECTION_EVENTS).document(e).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 loading(false);
                 Event event = new Event();
@@ -136,6 +138,7 @@ public class DashboardFragment extends Fragment implements EventListener {
             } else {
                 showErrorMessage();
             }
+
         });
     }
 
@@ -263,14 +266,18 @@ public class DashboardFragment extends Fragment implements EventListener {
 
     private void unregister(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Query query = db.collection(Constants.KEY_COLLECTION_EVENT_USERS).whereEqualTo(
-                Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID)).whereEqualTo(
-                Constants.KEY_EVENT_ID, event.id);
-        query.get().addOnCompleteListener(task -> task.getResult().getDocuments().
-                forEach(documentSnapshot -> documentSnapshot.getReference().delete()));
-        Map<String, Object> update = new HashMap<>();
-        update.put(Constants.KEY_MEMBERS, event.members - 1);
-        db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
+        CollectionReference ref = db.collection(Constants.KEY_COLLECTION_USERS);
+        DocumentReference df = ref.document(preferenceManager.getString(Constants.KEY_USER_ID));
+        df.get().addOnSuccessListener(documentSnapshot -> {
+            //noinspection unchecked
+            ArrayList<String> events = (ArrayList<String>) documentSnapshot.get(Constants.KEY_ARRAY_REGISTERED_EVENTS);
+            if (events != null) {
+                events.remove(event.id);
+                Map<String, Object> update = new HashMap<>();
+                update.put(Constants.KEY_MEMBERS, event.members - 1);
+                db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
+            }
+        });
     }
 
     private void showTime(EditText editTextSelectTime) {

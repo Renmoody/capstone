@@ -22,6 +22,7 @@ import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.android.gms.tasks.Tasks;
@@ -185,7 +186,6 @@ public class HomeFragment extends Fragment implements EventListener {
     }
 
 
-
     private void showErrorMessage() {
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
@@ -206,10 +206,9 @@ public class HomeFragment extends Fragment implements EventListener {
 
     private void addUserToEvent(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        HashMap<String, Object> eventUser = new HashMap<>();
-        eventUser.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
-        eventUser.put(Constants.KEY_EVENT_ID, event.id);
-        db.collection(Constants.KEY_COLLECTION_EVENT_USERS).add(eventUser);
+        db.collection(Constants.KEY_COLLECTION_USERS)
+                .document(preferenceManager.getString(Constants.KEY_USER_ID))
+                .update("registeredEvents", FieldValue.arrayUnion(event.id));
         Toast.makeText(requireContext(), "Event Joined!", Toast.LENGTH_SHORT).show();
 
     }
