@@ -56,7 +56,47 @@ public class AdAdapter extends RecyclerView.Adapter<AdAdapter.AdViewHolder> {
             binding.feedEventDate.setText(ad.dateStart);
             binding.feedEventDetails.setText(ad.details);
             binding.textMembers.setText(String.valueOf(ad.members));
+            binding.feedEventDateEnd.setText(ad.dateEnd);
+            checkDays(ad);
             binding.getRoot().setOnClickListener(view -> adListener.onAdClicked(ad));
+        }
+
+        private void checkDays(Ad ad) {
+            StringBuilder stringBuilder = new StringBuilder();
+            boolean r = true;
+            stringBuilder.append("Repeats: ");
+            if (ad.Monday.equals("true")) {
+                stringBuilder.append("Monday ");
+                r = false;
+            }
+            if (ad.Tuesday.equals("true")) {
+                stringBuilder.append("Tuesday ");
+                r = false;
+            }
+            if (ad.Wednesday.equals("true")) {
+                stringBuilder.append("Wednesday ");
+                r = false;
+            }
+            if (ad.Thursday.equals("true")) {
+                stringBuilder.append("Thursday ");
+                r = false;
+            }
+            if (ad.Friday.equals("true")) {
+                stringBuilder.append("Friday ");
+                r = false;
+            }
+            if (ad.Saturday.equals("true")) {
+                stringBuilder.append("Saturday ");
+                r = false;
+            }
+            if (ad.Sunday.equals("true")) {
+                stringBuilder.append("Sunday ");
+                r = false;
+            }
+            if (r) {
+                stringBuilder.append("Never");
+            }
+            binding.feedEventRepeat.setText(stringBuilder);
         }
 
     }

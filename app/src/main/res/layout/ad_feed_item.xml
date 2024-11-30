@@ -90,6 +90,15 @@
             android:textColor="@color/eerie_black"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/feed_event_date_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/date"
+            android:textColor="@color/eerie_black"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/feed_event_details"
@@ -100,6 +109,16 @@
             android:text="@string/event_details"
             android:textColor="@color/eerie_black"
             android:textSize="@dimen/_14ssp" />
+        <TextView
+            android:id="@+id/feed_event_repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/repeats"
+            android:textColor="@color/eerie_black"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
