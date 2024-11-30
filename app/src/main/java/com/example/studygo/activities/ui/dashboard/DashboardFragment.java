@@ -32,10 +32,12 @@ import com.example.studygo.utilities.PreferenceManager;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -269,14 +271,15 @@ public class DashboardFragment extends Fragment implements EventListener {
         CollectionReference ref = db.collection(Constants.KEY_COLLECTION_USERS);
         DocumentReference df = ref.document(preferenceManager.getString(Constants.KEY_USER_ID));
         df.get().addOnSuccessListener(documentSnapshot -> {
-            //noinspection unchecked
-            ArrayList<String> events = (ArrayList<String>) documentSnapshot.get(Constants.KEY_ARRAY_REGISTERED_EVENTS);
-            if (events != null) {
-                events.remove(event.id);
-                Map<String, Object> update = new HashMap<>();
-                update.put(Constants.KEY_MEMBERS, event.members - 1);
-                db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
-            }
+
+            Map<String, Object> update = new HashMap<>();
+            update.put(Constants.KEY_ARRAY_REGISTERED_EVENTS, FieldValue.arrayRemove(event.id));
+            df.update(update);
+            Toast.makeText(requireContext(), "Unregistered", Toast.LENGTH_SHORT).show();
+            update.clear();
+            update.put(Constants.KEY_MEMBERS, event.members - 1);
+            db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
+
         });
     }
 
