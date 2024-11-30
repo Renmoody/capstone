@@ -8,6 +8,7 @@ public class Constants {
     public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
     public static final String KEY_COLLECTION_CHAT = "chat";
     public static final String KEY_COLLECTION_FRIEND_REQUESTS = "friendRequests";
+    public static final String KEY_COLLECTION_EVENT_CHATS = "eventChats";
 
     public static final String KEY_USERNAME = "username";
     public static final String KEY_NAME = "name";
@@ -54,6 +55,4 @@ public class Constants {
     public static final String KEY_AD_FRIDAY = "friday";
     public static final String KEY_AD_SATURDAY = "saturday";
     public static final String KEY_AD_SUNDAY = "sunday";
-
-
 }
