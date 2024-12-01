@@ -61,5 +61,6 @@ public class Constants {
     public static final String KEY_SENDER_NAME = "senderName";
     public static final String KEY_MESSAGE_TYPE = "messageType";
     public static final Object KEY_INDIVIDUAL = "individual";
-    public static final String CRN = "crn";
+    public static final String KEY_CRN = "crn";
+    public static final String KEY_CLASS_NAME = "className";
 }

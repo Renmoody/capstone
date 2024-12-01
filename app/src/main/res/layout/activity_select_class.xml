@@ -66,4 +66,16 @@
         android:layout_marginTop="@dimen/_12sdp"
         android:background="@color/moss_green"
         app:layout_constraintTop_toBottomOf="@id/imageBack"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/studentClassRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:padding="@dimen/_20sdp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/viewSupporter"
+        app:layout_constraintTop_toBottomOf="@id/viewSupporter"
+        app:layout_constraintLeft_toLeftOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
