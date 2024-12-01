@@ -5,12 +5,12 @@ public class Constants {
     public static final String KEY_COLLECTION_FRIENDS = "friends";
     public static final String KEY_COLLECTION_EVENTS = "events";
     public static final String KEY_COLLECTION_ADS = "ads";
-    public static final String KEY_COLLECTION_EVENT_USERS = "eventUsers";
     public static final String KEY_COLLECTION_CHAT = "chat";
     public static final String KEY_COLLECTION_FRIEND_REQUESTS = "friendRequests";
     public static final String KEY_COLLECTION_EVENT_CHATS = "eventChats";
 
     public static final String KEY_ARRAY_REGISTERED_EVENTS = "registeredEvents";
+    public static final String KEY_ARRAY_GROUP_MEMBERS = "groupMembers";
 
     public static final String KEY_USERNAME = "username";
     public static final String KEY_NAME = "name";
@@ -26,6 +26,7 @@ public class Constants {
     public static final String KEY_ACCOUNT_COMPANY = "company";
     public static final String KEY_FCM_TOKEN = "fcmToken";
     public static final String KEY_USER = "user";
+    public static final String KEY_GROUP = "group";
     public static final String KEY_SENDER_ID = "senderID";
     public static final String KEY_RECIEVER_ID = "receiverID";
     public static final String KEY_MESSAGE = "message";
@@ -57,4 +58,7 @@ public class Constants {
     public static final String KEY_AD_FRIDAY = "friday";
     public static final String KEY_AD_SATURDAY = "saturday";
     public static final String KEY_AD_SUNDAY = "sunday";
+    public static final String KEY_SENDER_NAME = "senderName";
+    public static final String KEY_MESSAGE_TYPE = "messageType";
+    public static final Object KEY_INDIVIDUAL = "individual";
 }

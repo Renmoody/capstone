@@ -21,8 +21,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.studygo.R;
+import com.example.studygo.activities.ui.messages.GroupMessagesFragment;
+import com.example.studygo.activities.ui.messages.MessagesFragment;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentDashboardBinding;
 import com.example.studygo.listeners.EventListener;
@@ -85,17 +88,19 @@ public class DashboardFragment extends Fragment implements EventListener {
     private void publishEvent(Event e) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         HashMap<String, Object> event = new HashMap<>();
-        HashMap<String, Object> register = new HashMap<>();
         event.put(Constants.KEY_EVENT_NAME, e.name);
         event.put(Constants.KEY_EVENT_DETAILS, e.details);
         event.put(Constants.KEY_EVENT_ACCESS, e.access);
         event.put(Constants.KEY_EVENT_DATE, e.dateObject);
         event.put(Constants.KEY_MEMBERS, e.members);
         event.put(Constants.KEY_EVENT_AUTHOR_ID, e.authorId);
+        event.put(Constants.KEY_IMAGE, preferenceManager.getString(Constants.KEY_IMAGE));
         db.collection(Constants.KEY_COLLECTION_EVENTS).add(event).addOnSuccessListener(documentReference -> {
-            register.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
-            register.put(Constants.KEY_EVENT_ID, documentReference.getId());
-            db.collection(Constants.KEY_COLLECTION_EVENT_USERS).add(register);
+            db.collection(Constants.KEY_COLLECTION_USERS)
+                    .document(preferenceManager.getString(Constants.KEY_USER_ID))
+                    .update(Constants.KEY_ARRAY_REGISTERED_EVENTS, FieldValue.arrayUnion(documentReference.getId()));
+            Toast.makeText(requireContext(), "Event published!", Toast.LENGTH_SHORT).show();
+
         });
     }
 
@@ -110,6 +115,12 @@ public class DashboardFragment extends Fragment implements EventListener {
                 for (String event : events) {
                     getEvent(event);
                     Log.d("EVENTS", event.toString());
+                }
+            }
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                if (events.isEmpty()) {
+                    showErrorMessage();
                 }
             }
         });
@@ -129,6 +140,7 @@ public class DashboardFragment extends Fragment implements EventListener {
                 event.dateObject = documentSnapshot.getDate(Constants.KEY_EVENT_DATE);
                 event.members = Integer.parseInt(String.valueOf(documentSnapshot.get(Constants.KEY_MEMBERS)));
                 event.id = documentSnapshot.getId();
+                event.image = documentSnapshot.getString(Constants.KEY_IMAGE);
                 event.authorId = preferenceManager.getString(Constants.KEY_USER_ID);
                 events.add(event);
             }
@@ -209,9 +221,17 @@ public class DashboardFragment extends Fragment implements EventListener {
             adapter.notifyDataSetChanged();
             updateEvent(event);
         });
+        builder.setPositiveButton("Chat", ((dialogInterface, i) -> startGroupChat(event)));
         builder.setNeutralButton("Delete", (dialog, which) -> deleteEvent(event));
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
         builder.show();
+    }
+
+    private void startGroupChat(Event event) {
+        Intent intent = new Intent(requireContext(), GroupMessagesFragment.class);
+        intent.putExtra(Constants.KEY_GROUP, event);
+        startActivity(intent);
+
     }
 
     private void updateEvent(Event event) {
@@ -259,7 +279,8 @@ public class DashboardFragment extends Fragment implements EventListener {
 
     private void showEventDialog(Event event) {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Want to exit?");
+        builder.setTitle("Hey there!");
+        builder.setNeutralButton("Chat", ((dialogInterface, i) -> startGroupChat(event)));
         builder.setPositiveButton("Unregister", (dialogInterface, i) -> unregister(event));
         builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
         builder.show();
@@ -281,6 +302,11 @@ public class DashboardFragment extends Fragment implements EventListener {
             db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(update);
 
         });
+        db.collection(Constants.KEY_COLLECTION_EVENTS)
+                .document(event.id)
+                .update(Constants.KEY_ARRAY_GROUP_MEMBERS,
+                FieldValue.arrayRemove(preferenceManager.getString(Constants.KEY_USER_ID)));
+
     }
 
     private void showTime(EditText editTextSelectTime) {
@@ -303,6 +329,7 @@ public class DashboardFragment extends Fragment implements EventListener {
     }
 
     private void showErrorMessage() {
+        loading(false);
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
@@ -311,11 +338,12 @@ public class DashboardFragment extends Fragment implements EventListener {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_EVENTS)
                 .document(event.id).delete()
-                .addOnSuccessListener(task -> Toast.makeText(
-                        requireContext(),
-                        "Event Deleted",
-                        Toast.LENGTH_SHORT
-                ).show());
+                .addOnSuccessListener(task -> {
+                    db.collection(Constants.KEY_COLLECTION_USERS)
+                            .document(preferenceManager.getString(Constants.KEY_USER_ID))
+                            .update(Constants.KEY_ARRAY_REGISTERED_EVENTS, FieldValue.arrayRemove(event.id));
+                    Toast.makeText(requireContext(),"Event Deleted", Toast.LENGTH_SHORT).show();
+                });
     }
 
 }

@@ -1,10 +1,12 @@
 package com.example.studygo.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Event implements Serializable {
-    public String access, date, time, name, details, id, groupId, authorId, hostingerId;
+    public String access, date, time, name, details, id, groupId, authorId, image;
+    public ArrayList<String> eventMembers;
     public int members = 1;
     public Date dateObject;
     public Event() {}

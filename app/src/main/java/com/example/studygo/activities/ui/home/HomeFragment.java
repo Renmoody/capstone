@@ -71,9 +71,6 @@ public class HomeFragment extends Fragment implements EventListener {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                event.members++;
-                db = FirebaseFirestore.getInstance();
-                db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(Constants.KEY_MEMBERS, event.members);
                 addUserToEvent(event);
                 eventAdapter.notifyDataSetChanged();
             }
@@ -187,6 +184,7 @@ public class HomeFragment extends Fragment implements EventListener {
 
 
     private void showErrorMessage() {
+        loading(false);
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
@@ -208,7 +206,12 @@ public class HomeFragment extends Fragment implements EventListener {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_USERS)
                 .document(preferenceManager.getString(Constants.KEY_USER_ID))
-                .update("registeredEvents", FieldValue.arrayUnion(event.id));
+                .update(Constants.KEY_ARRAY_REGISTERED_EVENTS, FieldValue.arrayUnion(event.id));
+        event.members++;
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(Constants.KEY_MEMBERS, String.valueOf(event.members));
+        updates.put(Constants.KEY_ARRAY_GROUP_MEMBERS, FieldValue.arrayUnion(preferenceManager.getString(Constants.KEY_USER_ID)));
+        db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(updates);
         Toast.makeText(requireContext(), "Event Joined!", Toast.LENGTH_SHORT).show();
 
     }

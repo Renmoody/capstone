@@ -1,6 +1,7 @@
 package com.example.studygo.adapters;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.studygo.databinding.ItemContainerRecievedMessageBinding;
 import com.example.studygo.databinding.ItemContainerSentMessageBinding;
 import com.example.studygo.models.ChatMessage;
+import com.example.studygo.utilities.Constants;
 
 import java.util.List;
 
@@ -94,6 +96,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         void setData(ChatMessage chatMessage, Bitmap recieverProfileImage) {
+            if (chatMessage.type.equals(Constants.KEY_GROUP)) {
+                Log.d("Sender name", chatMessage.senderName);
+                binding.textSenderName.setText(chatMessage.senderName);
+            }
             binding.textMessage.setText(chatMessage.message);
             binding.textDateTime.setText(chatMessage.dateTime);
             binding.imageProfile.setImageBitmap(recieverProfileImage);
