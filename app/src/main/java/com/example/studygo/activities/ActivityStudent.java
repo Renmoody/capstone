@@ -1,10 +1,12 @@
 package com.example.studygo.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
+import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -35,21 +37,24 @@ public class ActivityStudent extends AppCompatActivity {
 
         preferenceManager = new PreferenceManager(getApplicationContext());
 
-        // Set up the bottom navigation view
+        // Set up the Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar_student);
+        setSupportActionBar(toolbar); // Integrates Toolbar with Activity
+
+//         Set up the bottom navigation view
         BottomNavigationView navView = binding.navViewStudent; // Use the binding
 
         // Specify top-level destinations
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_messages_activity, R.xml.root_preferences)
-                .build();
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_messages_activity, R.xml.root_preferences).build();
 
         // Set up the NavController
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_student);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+        binding.imageInfo.setOnClickListener(view -> {
+            startActivity(new Intent(getApplicationContext(), ActivitySelectClass.class));
+        });
         getToken();
-
-
     }
 
     @Override
@@ -71,16 +76,9 @@ public class ActivityStudent extends AppCompatActivity {
 
     private void updateToken(String token) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference documentReference = db
-                .collection(Constants.KEY_COLLECTION_USERS)
-                .document(preferenceManager
-                        .getString(Constants.KEY_USER_ID));
+        DocumentReference documentReference = db.collection(Constants.KEY_COLLECTION_USERS).document(preferenceManager.getString(Constants.KEY_USER_ID));
 
-        documentReference
-                .update(Constants.KEY_FCM_TOKEN, token)
-                .addOnSuccessListener(unused ->
-                        showToast("Token updated Successfully")).addOnFailureListener(e ->
-                        showToast("Token failed to update"));
+        documentReference.update(Constants.KEY_FCM_TOKEN, token).addOnSuccessListener(unused -> Log.d("FCM", "Token updated Successfully")).addOnFailureListener(e -> Log.d("FCM", "Token failed to update"));
     }
 
 }

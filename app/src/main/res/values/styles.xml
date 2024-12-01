@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Custom App Theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Primary color for the Toolbar background -->
+        <item name="colorPrimary">@color/moss_green</item>
+        <!-- Secondary color for Toolbar text and icons -->
+        <item name="colorPrimaryDark">@color/moss_green</item>
+        <!-- Color for controls within the Toolbar -->
+        <item name="colorAccent">@color/white</item>
+        <!-- Text color in the Toolbar (optional) -->
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+    <!-- Custom Preference Theme -->
+    <style name="PreferenceTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Set the background color of the Preference screen -->
+        <item name="android:background">@color/white</item>
+        <!-- Text color for Preference items -->
+        <item name="android:textColorPrimary">@color/eerie_black</item>
+    </style>
+
     <style name="CustomCalendarDateTextAppearance" parent="android:TextAppearance">
         <item name="android:textColor">@color/eerie_black</item>
         <item name="android:textSize">16sp</item>

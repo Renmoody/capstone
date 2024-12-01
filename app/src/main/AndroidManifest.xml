@@ -44,7 +44,8 @@
             android:name=".activities.SignUp"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".activities.ActivityStudent" />
+        <activity android:name=".activities.ActivityStudent"
+            android:theme="@style/AppTheme"/>
         <activity android:name="com.example.studygo.activities.ActivityTeacher" />
         <activity android:name="com.example.studygo.activities.ui.settings.PreferenceActivity" />
         <activity android:name="com.example.studygo.activities.ActivityMessages" />
@@ -56,9 +57,9 @@
         <activity android:name="com.example.studygo.activities.ActivityCompany" />
         <activity android:name="com.example.studygo.activities.ui.dashboard.AdSelector" />
         <activity android:name="com.example.studygo.activities.ActivityRequests" />
-        <activity android:name="com.example.studygo.activities.ui.friends.ActivityFriends" />
         <activity android:name="com.example.studygo.activities.ActivityAddFriend" />
         <activity android:name="com.example.studygo.activities.ui.messages.GroupMessagesFragment" />
+        <activity android:name="com.example.studygo.activities.ActivitySelectClass" />
 
     </application>
 

@@ -7,7 +7,7 @@ public class Constants {
     public static final String KEY_COLLECTION_ADS = "ads";
     public static final String KEY_COLLECTION_CHAT = "chat";
     public static final String KEY_COLLECTION_FRIEND_REQUESTS = "friendRequests";
-    public static final String KEY_COLLECTION_EVENT_CHATS = "eventChats";
+    public static final String KEY_COLLECTION_REGISTERED_CLASS = "userClasses";
 
     public static final String KEY_ARRAY_REGISTERED_EVENTS = "registeredEvents";
     public static final String KEY_ARRAY_GROUP_MEMBERS = "groupMembers";
@@ -61,4 +61,5 @@ public class Constants {
     public static final String KEY_SENDER_NAME = "senderName";
     public static final String KEY_MESSAGE_TYPE = "messageType";
     public static final Object KEY_INDIVIDUAL = "individual";
+    public static final String CRN = "crn";
 }
