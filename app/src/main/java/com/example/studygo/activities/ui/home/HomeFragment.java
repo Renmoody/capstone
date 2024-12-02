@@ -14,18 +14,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.studygo.adapters.AdAdapter;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentHomeBinding;
+import com.example.studygo.listeners.AdListener;
 import com.example.studygo.listeners.EventListener;
+import com.example.studygo.models.Ad;
 import com.example.studygo.models.Event;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
@@ -37,11 +40,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class HomeFragment extends Fragment implements EventListener {
+public class HomeFragment extends Fragment implements EventListener, AdListener {
 
     FragmentHomeBinding binding;
     private EventAdapter eventAdapter;
     private List<Event> events;
+    private AdAdapter adAdapter;
+    private List<Ad> ads;
     private PreferenceManager preferenceManager;
     private FirebaseFirestore db;
 
@@ -53,12 +58,64 @@ public class HomeFragment extends Fragment implements EventListener {
         preferenceManager = new PreferenceManager(requireContext());
         events = new ArrayList<>();
         eventAdapter = new EventAdapter(events, this);
+        ads = new ArrayList<>();
+        adAdapter = new AdAdapter(ads, this);
         getEvents();
+        setListeners();
         return binding.getRoot();
     }
 
+
+    private void setListeners() {
+        binding.imageAds.setOnClickListener(view -> getAds());
+        binding.imageEvents.setOnClickListener(view -> getEvents());
+    }
+
+    private void getAds() {
+        binding.eventRecyclerView.setAdapter(adAdapter);
+        ads.clear();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constants.KEY_COLLECTION_ADS)
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        loading(false);
+                        undoErrorMessage();
+                        for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                            Ad ad = add(queryDocumentSnapshot);
+                            ads.add(ad);
+                            ads.sort(Comparator.comparing(obj -> obj.dateStart));
+                            binding.eventRecyclerView.setAdapter(adAdapter);
+                            binding.eventRecyclerView.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        loading(false);
+                        showErrorMessage();
+                    }
+
+                });
+    }
+
+    private Ad add(QueryDocumentSnapshot queryDocumentSnapshot) {
+        Ad ad = new Ad();
+        ad.authorId = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_AUTHOR_ID)).toString();
+        ad.dateStart = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_DATE_START)).toString();
+        ad.dateEnd = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_DATE_END)).toString();
+        ad.id = queryDocumentSnapshot.getId();
+        ad.details = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_DETAILS)).toString();
+        ad.name = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_NAME)).toString();
+        ad.members = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_MEMBERS)).toString();
+        ad.Monday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_MONDAY)).toString();
+        ad.Tuesday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_TUESDAY)).toString();
+        ad.Wednesday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_WEDNESDAY)).toString();
+        ad.Thursday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_THURSDAY)).toString();
+        ad.Friday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_FRIDAY)).toString();
+        ad.Saturday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_SATURDAY)).toString();
+        ad.Sunday = Objects.requireNonNull(queryDocumentSnapshot.get(Constants.KEY_AD_SUNDAY)).toString();
+        return ad;
+    }
+
     private String getDate(Date date) {
-        return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
+        return new SimpleDateFormat("MMMM dd - hh:mm a", Locale.getDefault()).format(date);
     }
 
     private void showDialogue(Event event) {
@@ -81,6 +138,7 @@ public class HomeFragment extends Fragment implements EventListener {
 
 
     private void getEvents() {
+        binding.eventRecyclerView.setAdapter(eventAdapter);
         loading(true);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         List<Task<Boolean>> friendCheckTasks = new ArrayList<>();
@@ -88,8 +146,9 @@ public class HomeFragment extends Fragment implements EventListener {
 
         db.collection(Constants.KEY_COLLECTION_EVENTS).get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
+                loading(false);
+                undoErrorMessage();
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                    loading(false);
 
                     // Skip private events
                     if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))) {
@@ -188,6 +247,9 @@ public class HomeFragment extends Fragment implements EventListener {
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
+    private void undoErrorMessage() {
+        binding.textErrorMessage.setVisibility(View.INVISIBLE);
+    }
 
     private void loading(Boolean isLoading) {
         if (isLoading) {
@@ -213,6 +275,11 @@ public class HomeFragment extends Fragment implements EventListener {
         updates.put(Constants.KEY_ARRAY_GROUP_MEMBERS, FieldValue.arrayUnion(preferenceManager.getString(Constants.KEY_USER_ID)));
         db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(updates);
         Toast.makeText(requireContext(), "Event Joined!", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onAdClicked(Ad ad) {
 
     }
 }

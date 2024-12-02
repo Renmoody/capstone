@@ -3,11 +3,11 @@
   <component name="deploymentTargetSelector">
     <selectionStates>
       <SelectionState runConfigName="app">
-        <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-12-02T21:40:43.020466Z">
+        <option name="selectionMode" value="DIALOG" />
+        <DropdownSelection timestamp="2024-12-02T23:48:00.358706100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_35.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_35_1.avd" />
             </handle>
           </Target>
         </DropdownSelection>
@@ -15,17 +15,17 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_35_1.avd" />
+              </handle>
+            </Target>
+            <Target type="DEFAULT_BOOT">
+              <handle>
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Medium_Phone_API_35.avd" />
+              </handle>
+            </Target>
+            <Target type="DEFAULT_BOOT">
+              <handle>
                 <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_29.avd" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_30_2_1.avd" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_35.avd" />
               </handle>
             </Target>
           </targets>
