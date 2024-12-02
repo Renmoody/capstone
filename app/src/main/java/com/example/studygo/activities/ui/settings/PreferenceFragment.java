@@ -32,7 +32,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        getActivity().setTheme(R.style.PreferenceTheme);
         setPreferencesFromResource(R.xml.root_preferences, rootKey);
         preferenceManager = new PreferenceManager(requireContext());
         email = findPreference(Constants.KEY_EMAIL);

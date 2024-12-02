@@ -215,5 +215,4 @@ public class HomeFragment extends Fragment implements EventListener {
         Toast.makeText(requireContext(), "Event Joined!", Toast.LENGTH_SHORT).show();
 
     }
-
 }
