@@ -96,7 +96,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         void setData(ChatMessage chatMessage, Bitmap recieverProfileImage) {
-            if (chatMessage.type.equals(Constants.KEY_GROUP)) {
+            if (chatMessage.type != null) {
                 Log.d("Sender name", chatMessage.senderName);
                 binding.textSenderName.setText(chatMessage.senderName);
             }

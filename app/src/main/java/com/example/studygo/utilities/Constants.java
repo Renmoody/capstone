@@ -63,4 +63,11 @@ public class Constants {
     public static final Object KEY_INDIVIDUAL = "individual";
     public static final String KEY_CRN = "crn";
     public static final String KEY_CLASS_NAME = "className";
+
+    public static final String KEY_RECIEVER_NAME = "recieverName";
+    public static final String KEY_RECIEVER_IMAGE = "recieverImage";
+    public static final String KEY_LAST_MESSAGE = "lastMessage";
+    public static final String KEY_SENDER_IMAGE = "senderImage";
+    public static final String KEY_COLLECTION_CONVERSATIONS = "conversations";
+
 }
