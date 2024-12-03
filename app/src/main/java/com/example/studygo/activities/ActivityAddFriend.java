@@ -2,7 +2,6 @@ package com.example.studygo.activities;
 
 import android.app.AlertDialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -17,15 +16,17 @@ import com.example.studygo.models.User;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ActivityAddFriend extends AppCompatActivity implements UserListener {
 
@@ -37,6 +38,7 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
         super.onCreate(savedInstanceState);
         binding = ActivityAddFriendBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        loading(true);
         preferenceManager = new PreferenceManager(getApplicationContext());
         setListeners();
         getCRNS();
@@ -48,93 +50,7 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
                 getOnBackPressedDispatcher().onBackPressed());
     }
 
-    private void getUsers() {
-        loading(true);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String currentUserID = preferenceManager.getString(Constants.KEY_USER_ID);
-
-        // Step 1: Fetch all friends of the current user in a single query
-        db.collection(Constants.KEY_COLLECTION_FRIENDS)
-                .whereEqualTo(Constants.KEY_USER_ID, currentUserID)
-                .get()
-                .addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful() && task1.getResult() != null) {
-                        Set<String> friendIds = new HashSet<>();
-
-                        // Add friends where currentUserID is the userId
-                        for (QueryDocumentSnapshot document : task1.getResult()) {
-                            friendIds.add(document.getString(Constants.KEY_FRIEND_ID));
-                        }
-
-                        // Add friends where currentUserID is the friendId
-                        db.collection(Constants.KEY_COLLECTION_FRIENDS)
-                                .whereEqualTo(Constants.KEY_FRIEND_ID, currentUserID)
-                                .get()
-                                .addOnCompleteListener(task2 -> {
-                                    if (task2.isSuccessful() && task2.getResult() != null) {
-                                        for (QueryDocumentSnapshot document : task2.getResult()) {
-                                            friendIds.add(document.getString(Constants.KEY_USER_ID));
-                                        }
-
-                                        // Step 2: Fetch users excluding the current user and their friends
-                                        fetchUsersExcludingFriends(friendIds, currentUserID);
-                                    } else {
-                                        loading(false);
-                                        showErrorMessage();
-                                    }
-                                });
-                    } else {
-                        loading(false);
-                        showErrorMessage();
-                    }
-                });
-    }
-
-    private void fetchUsersExcludingFriends(Set<String> friendIds, String currentUserID) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection(Constants.KEY_COLLECTION_USERS)
-                .whereEqualTo(Constants.KEY_ACCOUNT_TYPE, Constants.KEY_ACCOUNT_STUDNET)
-                .get()
-                .addOnCompleteListener(task -> {
-                    loading(false);
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        List<User> users = new ArrayList<>();
-
-                        for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                            String userId = queryDocumentSnapshot.getId();
-
-                            // Skip the current user and friends
-                            if (currentUserID.equals(userId) || friendIds.contains(userId)) {
-                                continue;
-                            }
-
-                            // Only retrieve necessary fields to reduce network overhead
-                            User user = new User();
-                            user.name = queryDocumentSnapshot.getString(Constants.KEY_NAME);
-                            user.email = queryDocumentSnapshot.getString(Constants.KEY_EMAIL);
-                            user.image = queryDocumentSnapshot.getString(Constants.KEY_IMAGE);
-                            user.token = queryDocumentSnapshot.getString(Constants.KEY_FCM_TOKEN);
-                            user.id = userId;
-                            users.add(user);
-                        }
-
-                        // Update the UI with filtered users
-                        if (!users.isEmpty()) {
-                            UsersAdapter usersAdapter = new UsersAdapter(users, this);
-                            binding.usersRecyclerView.setAdapter(usersAdapter);
-                            binding.usersRecyclerView.setVisibility(View.VISIBLE);
-                        } else {
-                            showErrorMessage();
-                        }
-                    } else {
-                        showErrorMessage();
-                    }
-                });
-    }
-
-
-    private ArrayList<String> crns = new ArrayList<>();
+    private final ArrayList<String> crns = new ArrayList<>();
 
     private void getCRNS() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -146,56 +62,170 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
                             crns.add(qs.getString(Constants.KEY_CRN));
                         }
                         getSimilarStudents();
+                    } else {
+                        showErrorMessage();
                     }
                 });
     }
 
-    // Helper method to update RecyclerView
-    private void updateRecyclerView(List<User> friends) {
-        if (!students.isEmpty()) {
-            UsersAdapter usersAdapter = new UsersAdapter(students, this);
-            binding.usersRecyclerView.setAdapter(usersAdapter);
-            binding.usersRecyclerView.setVisibility(View.VISIBLE);
-        } else {
-            showErrorMessage(); // No friends found to display
-        }
-    }
 
-    private ArrayList<User> students = new ArrayList<>();
+    private final ArrayList<User> students = new ArrayList<>();
 
     private void getSimilarStudents() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference collection = db.collection(Constants.KEY_COLLECTION_REGISTERED_CLASS);
         CollectionReference userRef = db.collection(Constants.KEY_COLLECTION_USERS);
-        for (String crn : crns) {
-            Log.d("CRN", crn);
-            collection.whereEqualTo(Constants.KEY_CRN, crn).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                    loading(false);
-                    for (QueryDocumentSnapshot qs : task.getResult()) {
-                        if (qs.getString(Constants.KEY_USER_ID) != null && !qs.getString(Constants.KEY_USER_ID).equals(preferenceManager.getString(Constants.KEY_USER_ID))) {
-                            userRef.document(Objects.requireNonNull(qs.getString(Constants.KEY_USER_ID)))
-                                    .get().addOnSuccessListener(userDocument -> {
-                                        if (userDocument.exists()) {
-                                            User user = new User();
-                                            user.name = userDocument.getString(Constants.KEY_NAME);
-                                            user.email = userDocument.getString(Constants.KEY_EMAIL);
-                                            user.image = userDocument.getString(Constants.KEY_IMAGE);
-                                            user.token = userDocument.getString(Constants.KEY_FCM_TOKEN);
-                                            user.id = userDocument.getId();
-                                            students.add(user);
-                                            updateRecyclerView(students);
-                                        }
-                                    });
+        CollectionReference friendsRef = db.collection(Constants.KEY_COLLECTION_FRIENDS);
+
+        // Set to store friend IDs for filtering
+        Set<String> friendIds = new HashSet<>();
+
+        // Fetch friends for the current user (check both userId and friendId)
+        String currentUserId = preferenceManager.getString(Constants.KEY_USER_ID);
+
+        friendsRef.whereEqualTo(Constants.KEY_USER_ID, currentUserId).get().addOnSuccessListener(friendTask1 -> {
+            if (friendTask1 != null && !friendTask1.isEmpty()) {
+                for (DocumentSnapshot doc : friendTask1.getDocuments()) {
+                    String friendId = doc.getString(Constants.KEY_FRIEND_ID);
+                    if (friendId != null) {
+                        friendIds.add(friendId);
+                    }
+                }
+            }
+
+            // Also check where the current user is stored as the friendId
+            friendsRef.whereEqualTo(Constants.KEY_FRIEND_ID, currentUserId).get().addOnSuccessListener(friendTask2 -> {
+                if (friendTask2 != null && !friendTask2.isEmpty()) {
+                    for (DocumentSnapshot doc : friendTask2.getDocuments()) {
+                        String userId = doc.getString(Constants.KEY_USER_ID);
+                        if (userId != null) {
+                            friendIds.add(userId);
                         }
                     }
                 }
+
+                // After fetching all friends, proceed to fetch similar students and then everyone else
+                fetchStudentsExcludingFriends(collection, userRef, friendIds);
+                fetchAdditionalUsers(userRef, friendIds);
             });
+        });
+    }
+
+    // Method to fetch and filter students
+    private void fetchStudentsExcludingFriends(CollectionReference collection, CollectionReference userRef, Set<String> friendIds) {
+        Map<String, Map<String, String>> userCommonCrnsMap = new HashMap<>();
+        for (String crn : crns) {
+            collection.whereEqualTo(Constants.KEY_CRN, crn).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                    for (QueryDocumentSnapshot qs : task.getResult()) {
+                        String userId = qs.getString(Constants.KEY_USER_ID);
+
+                        // Skip if the user is already a friend
+                        if (userId != null && !userId.equals(preferenceManager.getString(Constants.KEY_USER_ID)) && !friendIds.contains(userId)) {
+                            userRef.document(userId).get().addOnSuccessListener(userDocument -> {
+                                undoErrorMessage();
+                                if (userDocument.exists()) {
+                                    loading(false);
+                                    String userIdFromDoc = userDocument.getId();
+                                    String crnName = qs.getString(Constants.KEY_CLASS_NAME); // Assume there's a name field
+
+                                    // Update map to store CRN with its associated name
+                                    userCommonCrnsMap.putIfAbsent(userIdFromDoc, new HashMap<>());
+                                    Objects.requireNonNull(userCommonCrnsMap.get(userIdFromDoc)).put(crn, crnName);
+
+                                    // Add user details if not already present
+                                    if (findUserById(userIdFromDoc) == null) {
+                                        User user = new User();
+                                        user.name = userDocument.getString(Constants.KEY_NAME);
+                                        user.email = userDocument.getString(Constants.KEY_EMAIL);
+                                        user.image = userDocument.getString(Constants.KEY_IMAGE);
+                                        user.token = userDocument.getString(Constants.KEY_FCM_TOKEN);
+                                        user.id = userIdFromDoc;
+                                        students.add(user);
+                                    }
+
+                                    // Update RecyclerView with new data
+                                    updateRecyclerViewWithCommonCrns(students, userCommonCrnsMap);
+                                } else {
+                                    showErrorMessage();
+                                }
+                            });
+                        }
+                    }
+
+                } else {
+                    showErrorMessage();
+                }
+
+            }); if (students.isEmpty()) showErrorMessage();
+        }
+    }
+
+    private void fetchAdditionalUsers(CollectionReference userRef, Set<String> friendIds) {
+        userRef.whereEqualTo(Constants.KEY_ACCOUNT_TYPE, Constants.KEY_ACCOUNT_STUDNET).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DocumentSnapshot userDoc : task.getResult()) {
+                    String userId = userDoc.getId();
+                    // Skip if the user is already a friend
+                    if (!friendIds.contains(userId) && findUserById(userId) == null) {
+                        User user = new User();
+                        user.name = userDoc.getString(Constants.KEY_NAME);
+                        user.email = userDoc.getString(Constants.KEY_EMAIL);
+                        user.image = userDoc.getString(Constants.KEY_IMAGE);
+                        user.token = userDoc.getString(Constants.KEY_FCM_TOKEN);
+                        user.id = userId;
+                        students.add(user);
+                    }
+                }
+
+                // After fetching additional users, update the RecyclerView
+                updateRecyclerViewWithAdditionalUsers(students);
+            } else {
+                showErrorMessage();
+            }
+        });
+    }
+    private void updateRecyclerViewWithAdditionalUsers(List<User> students) {
+        if (!students.isEmpty()) {
+            UsersAdapter usersAdapter = new UsersAdapter(students, this, null);
+            binding.usersRecyclerView.setAdapter(usersAdapter);
+            binding.usersRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            showErrorMessage();
         }
 
     }
 
+    private void undoErrorMessage() {
+        binding.textErrorMessage.setVisibility(View.INVISIBLE);
+    }
+
+
+    // Helper method to find a user in the list by ID
+    private User findUserById(String userId) {
+        for (User user : students) {
+            if (user.id.equals(userId)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    // Update the RecyclerView with the list of students and their common CRNs
+    private void updateRecyclerViewWithCommonCrns(List<User> students, Map<String, Map<String, String>> userCommonCrnsMap) {
+        if (!students.isEmpty()) {
+            UsersAdapter usersAdapter = new UsersAdapter(students, this, userCommonCrnsMap);
+            binding.usersRecyclerView.setAdapter(usersAdapter);
+            binding.usersRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            showErrorMessage();
+        }
+
+    }
+
+
     private void showErrorMessage() {
+        loading(false);
         binding.textErrorMessage.setText(String.format("%s", "No users available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }

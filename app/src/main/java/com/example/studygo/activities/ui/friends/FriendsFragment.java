@@ -135,7 +135,7 @@ public class FriendsFragment extends Fragment implements UserListener {
     // Helper method to update RecyclerView
     private void updateRecyclerView(List<User> friends) {
         if (!friends.isEmpty()) {
-            UsersAdapter usersAdapter = new UsersAdapter(friends, this);
+            UsersAdapter usersAdapter = new UsersAdapter(friends, this, null);
             binding.usersRecyclerView.setAdapter(usersAdapter);
             binding.usersRecyclerView.setVisibility(View.VISIBLE);
         } else {

@@ -87,6 +87,7 @@ public class ActivitySelectClass extends AppCompatActivity implements StudentCla
     }
 
     private void showErrorMessage() {
+        loading(false);
         binding.textErrorMessage.setText(R.string.no_classes_added);
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }

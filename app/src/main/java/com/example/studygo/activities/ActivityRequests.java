@@ -96,7 +96,7 @@ public class ActivityRequests extends AppCompatActivity implements UserListener 
     // Helper method to update RecyclerView
     private void updateRecyclerView(List<User> users) {
         if (!users.isEmpty()) {
-            UsersAdapter usersAdapter = new UsersAdapter(users, this);
+            UsersAdapter usersAdapter = new UsersAdapter(users, this, null);
             binding.usersRecyclerView.setAdapter(usersAdapter);
             binding.usersRecyclerView.setVisibility(View.VISIBLE);
         } else {

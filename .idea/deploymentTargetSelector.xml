@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2024-12-03T01:02:31.912921800Z">
+        <DropdownSelection timestamp="2024-12-03T04:03:26.643837900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_35_1.avd" />
@@ -21,11 +21,6 @@
             <Target type="DEFAULT_BOOT">
               <handle>
                 <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Medium_Phone_API_35.avd" />
-              </handle>
-            </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_29.avd" />
               </handle>
             </Target>
           </targets>
