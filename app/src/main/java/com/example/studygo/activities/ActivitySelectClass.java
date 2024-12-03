@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.studygo.R;
 import com.example.studygo.adapters.StudentClassAdapter;
@@ -19,6 +20,7 @@ import com.example.studygo.listeners.StudentClassListener;
 import com.example.studygo.models.StudentClass;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -36,6 +38,7 @@ public class ActivitySelectClass extends AppCompatActivity implements StudentCla
     private String currentClassId;
     private String currentClassName;
     private List<StudentClass> studentClassList;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,18 +47,39 @@ public class ActivitySelectClass extends AppCompatActivity implements StudentCla
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(getApplicationContext());
         setListeners();
+        db = FirebaseFirestore.getInstance();
         studentClassList = new ArrayList<>();
         getClasses();
     }
 
     private void setListeners() {
         binding.imageBack.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
-        binding.imageInfo.setOnClickListener(view -> addClass());
+        binding.imageMajor.setOnClickListener(view -> addClass());
+        binding.imageInfo.setOnClickListener(view -> majorInfo());
+    }
+
+    private void majorInfo() {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+        LinearLayout linearLayout = new LinearLayout(this);
+        EditText editText = new EditText(this);
+        editText.setHint("Major");
+        editText.setText(preferenceManager.getString(Constants.KEY_MAJOR));
+        linearLayout.addView(editText);
+        builder.setView(linearLayout);
+        builder.setPositiveButton("Save", ((dialogInterface, i) -> save(editText.getText().toString())));
+        builder.show();
+    }
+
+    private void save(String major) {
+        db.collection(Constants.KEY_COLLECTION_USERS).document(preferenceManager.getString(Constants.KEY_USER_ID))
+                .update(Constants.KEY_MAJOR, major).addOnCompleteListener(task -> {
+                    Toast.makeText(this, "Update complete", Toast.LENGTH_SHORT).show();
+                    preferenceManager.putString(Constants.KEY_MAJOR, major);
+                });
     }
 
     private void getClasses() {
         loading(true);
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(Constants.KEY_COLLECTION_REGISTERED_CLASS).whereEqualTo(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
                 .get().addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {

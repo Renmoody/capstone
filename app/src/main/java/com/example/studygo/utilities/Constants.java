@@ -70,4 +70,5 @@ public class Constants {
     public static final String KEY_SENDER_IMAGE = "senderImage";
     public static final String KEY_COLLECTION_CONVERSATIONS = "conversations";
 
+    public static final String KEY_MAJOR = "major";
 }
