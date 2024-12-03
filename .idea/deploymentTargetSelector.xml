@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DIALOG" />
-        <DropdownSelection timestamp="2024-12-02T23:48:00.358706100Z">
+        <DropdownSelection timestamp="2024-12-03T01:02:31.912921800Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\renpo\.android\avd\Pixel_8_Pro_API_35_1.avd" />

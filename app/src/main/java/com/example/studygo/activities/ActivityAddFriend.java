@@ -1,8 +1,8 @@
 package com.example.studygo.activities;
 
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -10,13 +10,13 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.studygo.activities.ui.messages.MessagesFragment;
 import com.example.studygo.adapters.UsersAdapter;
 import com.example.studygo.databinding.ActivityAddFriendBinding;
 import com.example.studygo.listeners.UserListener;
 import com.example.studygo.models.User;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class ActivityAddFriend extends AppCompatActivity implements UserListener {
@@ -38,7 +39,8 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
         setContentView(binding.getRoot());
         preferenceManager = new PreferenceManager(getApplicationContext());
         setListeners();
-        getUsers();
+        getCRNS();
+        //        getUsers();
     }
 
     private void setListeners() {
@@ -131,6 +133,67 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
                 });
     }
 
+
+    private ArrayList<String> crns = new ArrayList<>();
+
+    private void getCRNS() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(Constants.KEY_COLLECTION_REGISTERED_CLASS)
+                .whereEqualTo(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot qs : task.getResult()) {
+                            crns.add(qs.getString(Constants.KEY_CRN));
+                        }
+                        getSimilarStudents();
+                    }
+                });
+    }
+
+    // Helper method to update RecyclerView
+    private void updateRecyclerView(List<User> friends) {
+        if (!students.isEmpty()) {
+            UsersAdapter usersAdapter = new UsersAdapter(students, this);
+            binding.usersRecyclerView.setAdapter(usersAdapter);
+            binding.usersRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            showErrorMessage(); // No friends found to display
+        }
+    }
+
+    private ArrayList<User> students = new ArrayList<>();
+
+    private void getSimilarStudents() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference collection = db.collection(Constants.KEY_COLLECTION_REGISTERED_CLASS);
+        CollectionReference userRef = db.collection(Constants.KEY_COLLECTION_USERS);
+        for (String crn : crns) {
+            Log.d("CRN", crn);
+            collection.whereEqualTo(Constants.KEY_CRN, crn).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                    loading(false);
+                    for (QueryDocumentSnapshot qs : task.getResult()) {
+                        if (qs.getString(Constants.KEY_USER_ID) != null && !qs.getString(Constants.KEY_USER_ID).equals(preferenceManager.getString(Constants.KEY_USER_ID))) {
+                            userRef.document(Objects.requireNonNull(qs.getString(Constants.KEY_USER_ID)))
+                                    .get().addOnSuccessListener(userDocument -> {
+                                        if (userDocument.exists()) {
+                                            User user = new User();
+                                            user.name = userDocument.getString(Constants.KEY_NAME);
+                                            user.email = userDocument.getString(Constants.KEY_EMAIL);
+                                            user.image = userDocument.getString(Constants.KEY_IMAGE);
+                                            user.token = userDocument.getString(Constants.KEY_FCM_TOKEN);
+                                            user.id = userDocument.getId();
+                                            students.add(user);
+                                            updateRecyclerView(students);
+                                        }
+                                    });
+                        }
+                    }
+                }
+            });
+        }
+
+    }
 
     private void showErrorMessage() {
         binding.textErrorMessage.setText(String.format("%s", "No users available"));
