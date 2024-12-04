@@ -78,19 +78,19 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                     if (crnNameMap.size() > 2) {
                         crnDisplay += " + " + (crnNameMap.size() - 2) + " more";
                     }
-
-                    if (!binding.textMajor.getText().toString().isEmpty()) {
-                        binding.textMajor.setVisibility(View.VISIBLE);
-                    } else {
-                        binding.textMajor.setVisibility(View.GONE);
-                    }
-                    binding.textClasses.setText(crnDisplay);
-                    binding.textMajor.setText(user.major);
-                    binding.textClasses.setVisibility(View.VISIBLE);
                     binding.textEmail.setVisibility(View.GONE);
+                    binding.textClasses.setText(crnDisplay);
+                    binding.textClasses.setVisibility(View.VISIBLE);
+                    if (user.major != null) {
+                        binding.textMajor.setText(user.major);
+                        binding.textMajor.setVisibility(View.VISIBLE);
+                    }
                 } else {
-                    binding.textEmail.setVisibility(View.VISIBLE);
-                    binding.textMajor.setVisibility(View.GONE);
+                    binding.textEmail.setVisibility(View.GONE);
+                    if (user.major != null) {
+                        binding.textMajor.setText(user.major);
+                        binding.textMajor.setVisibility(View.VISIBLE);
+                    }
                     binding.textClasses.setVisibility(View.GONE);  // Hide the classes if no CRNs exist for the user
                 }
             }

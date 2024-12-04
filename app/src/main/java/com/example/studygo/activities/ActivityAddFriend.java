@@ -114,9 +114,9 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
     }
 
     private final List<User> students = new ArrayList<>();
-
+    private Map<String, Map<String, String>> userCommonCrnsMap = new HashMap<>();
     private void fetchStudentsExcludingFriends(CollectionReference collection, CollectionReference userRef, Set<String> friendIds) {
-        Map<String, Map<String, String>> userCommonCrnsMap = new HashMap<>();
+
 
         for (String crn : crns) {
             collection.whereEqualTo(Constants.KEY_CRN, crn)
@@ -171,7 +171,7 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
                     if (task.isSuccessful()) {
                         for (DocumentSnapshot userDoc : task.getResult()) {
                             String userId = userDoc.getId();
-                            if (!friendIds.contains(userId) && findUserById(userId) == null) {
+                            if (!friendIds.contains(userId) && findUserById(userId) == null && !userId.equals(preferenceManager.getString(Constants.KEY_USER_ID))) {
                                 synchronized (students) {
                                     User user = new User();
                                     user.name = userDoc.getString(Constants.KEY_NAME);
@@ -185,16 +185,17 @@ public class ActivityAddFriend extends AppCompatActivity implements UserListener
                             }
                         }
                         // Update RecyclerView on the main thread
-                        mainHandler.post(() -> updateRecyclerViewWithAdditionalUsers(students));
+                        mainHandler.post(() -> updateRecyclerViewWithAdditionalUsers(students, userCommonCrnsMap));
                     } else {
                         mainHandler.post(this::showErrorMessage);
                     }
                 });
     }
 
-    private void updateRecyclerViewWithAdditionalUsers(List<User> students) {
+    private void updateRecyclerViewWithAdditionalUsers(List<User> students, Map<String, Map<String, String>> userCommonCrnsMap) {
         if (!students.isEmpty()) {
-            UsersAdapter usersAdapter = new UsersAdapter(students, this, null);
+            loading(false);
+            UsersAdapter usersAdapter = new UsersAdapter(students, this, userCommonCrnsMap);
             binding.usersRecyclerView.setAdapter(usersAdapter);
             binding.usersRecyclerView.setVisibility(View.VISIBLE);
         } else {
