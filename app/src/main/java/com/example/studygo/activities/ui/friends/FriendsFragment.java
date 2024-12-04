@@ -110,6 +110,7 @@ public class FriendsFragment extends Fragment implements UserListener {
                             user.email = userDocument.getString(Constants.KEY_EMAIL);
                             user.image = userDocument.getString(Constants.KEY_IMAGE);
                             user.token = userDocument.getString(Constants.KEY_FCM_TOKEN);
+                            user.major = userDocument.getString(Constants.KEY_MAJOR);
                             user.id = userDocument.getId();
                             friends.add(user);
                         }
