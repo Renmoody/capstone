@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -13,6 +14,8 @@ import com.example.studygo.adapters.ChatAdapter;
 import com.example.studygo.databinding.FragmentMessagesBinding;
 import com.example.studygo.models.ChatMessage;
 import com.example.studygo.models.User;
+import com.example.studygo.network.ApiClient;
+import com.example.studygo.network.ApiService;
 import com.example.studygo.utilities.Constants;
 import com.example.studygo.utilities.PreferenceManager;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,6 +25,10 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -30,6 +37,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class MessagesFragment extends BaseActivity {
@@ -122,7 +133,64 @@ public class MessagesFragment extends BaseActivity {
             conversion.put(Constants.KEY_TIMESTAMP, new Date());
             addConversion(conversion);
         }
+        if (!isRecieverAvailable) {
+            try {
+                JSONArray tokens = new JSONArray();
+                tokens.put(receiverUser.token);
+
+                JSONObject data = new JSONObject();
+                data.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+                data.put(Constants.KEY_NAME, preferenceManager.getString(Constants.KEY_NAME));
+                data.put(Constants.KEY_FCM_TOKEN, preferenceManager.getString(Constants.KEY_FCM_TOKEN));
+                data.put(Constants.KEY_MESSAGE, binding.inputMessage.getText().toString());
+
+                JSONObject body = new JSONObject();
+                body.put(Constants.REMOTE_MSG_DATA, data);
+                body.put(Constants.REMOTE_MSG_AUTHORIZATION, tokens);
+
+                sendNotification(body.toString());
+            } catch (Exception e) {
+                showToast(e.getMessage());
+            }
+        }
         binding.inputMessage.setText(null);
+    }
+
+    private void showToast(String m) {
+        Toast.makeText(getApplicationContext(), m, Toast.LENGTH_SHORT).show();
+    }
+
+    private void sendNotification(String messageBody) {
+        ApiClient.getClient().create(ApiService.class).sendMessage(
+                Constants.getRemoteMsgHeaders(),
+                messageBody
+        ).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    try {
+                        if (response.body() != null) {
+                            JSONObject responseJSON = new JSONObject(response.body());
+                            JSONArray jsonArray = responseJSON.getJSONArray("results");
+                            if (responseJSON.getInt("failure") == 1) {
+                                JSONObject error = (JSONObject) jsonArray.get(0);
+                                showToast(error.getString("error"));
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    showToast("Notification sent");
+                } else {
+                    showToast("Error " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                showToast(t.getMessage());
+            }
+        });
     }
 
     private void listenAvailablityOfReciever() {
@@ -139,6 +207,7 @@ public class MessagesFragment extends BaseActivity {
                             .intValue();
                     isRecieverAvailable = availability == 1;
                 }
+                receiverUser.token = value.getString(Constants.KEY_FCM_TOKEN);
             }
             if (isRecieverAvailable) {
                 binding.textAvailability.setVisibility(View.VISIBLE);
