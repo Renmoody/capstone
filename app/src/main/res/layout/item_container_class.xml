@@ -1,78 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    app:cardCornerRadius="2dp"
+    app:cardElevation="14dp"
     android:background="@color/white"
-    android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <View
-        android:id="@+id/viewDivider"
+    android:padding="@dimen/_10sdp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/black"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/headerBackground"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/moss_green"
-        app:layout_constraintBottom_toTopOf="@id/viewSupporter"
-        app:layout_constraintTop_toBottomOf="@id/viewDivider" />
+        <View
+            android:id="@+id/viewDivider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/eerie_black"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/student_class_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:padding="@dimen/_5sdp"
-        android:scrollHorizontally="true"
-        android:text="Class Name"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_16ssp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/viewSupporter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/headerBackground" />
-    <TextView
-        android:id="@+id/student_class_crn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:padding="@dimen/_5sdp"
-        android:scrollHorizontally="true"
-        android:text="CRN:"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_16ssp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/viewSupporter"
-        app:layout_constraintEnd_toStartOf="@id/textCRN"
-        app:layout_constraintTop_toTopOf="@id/headerBackground" />
+        <View
+            android:id="@+id/headerBackground"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/moss_green"
+            app:layout_constraintBottom_toTopOf="@id/viewSupporter"
+            app:layout_constraintTop_toBottomOf="@id/viewDivider" />
 
-    <TextView
-        android:id="@+id/textCRN"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:padding="@dimen/_5sdp"
-        android:scrollHorizontally="true"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_16ssp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/viewSupporter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/headerBackground" />
+        <TextView
+            android:id="@+id/student_class_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Class Name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="@id/headerBackground"
+            app:layout_constraintStart_toStartOf="parent" />
 
+        <TextView
+            android:id="@+id/student_class_crn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CRN:"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toStartOf="@id/textCRN"
+            app:layout_constraintTop_toTopOf="@id/headerBackground" />
 
-    <View
-        android:id="@+id/viewSupporter"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/_12sdp"
-        android:background="@color/moss_green"
-        app:layout_constraintTop_toBottomOf="@id/student_class_name" />
+        <TextView
+            android:id="@+id/textCRN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/headerBackground" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <View
+            android:id="@+id/viewSupporter"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:background="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/student_class_name" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

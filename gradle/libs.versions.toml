@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.2"
+converterScalars = "2.9.0"
 jsch = "0.1.55"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -26,6 +27,7 @@ firebaseFirestore = "25.1.1"
 firebaseMessaging = "24.0.3"
 
 [libraries]
+converter-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "converterScalars" }
 jsch = { module = "com.jcraft:jsch", version.ref = "jsch" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -43,6 +45,8 @@ navigation-fragment = { group = "androidx.navigation", name = "navigation-fragme
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 ojdbc8 = { module = "com.oracle.ojdbc:ojdbc8", version.ref = "ojdbc8" }
 preference = { group = "androidx.preference", name = "preference", version.ref = "preference" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converterScalars" }
+retrofit2-x-x = { module = "com.squareup.retrofit2:retrofit2.9.0" }
 roundedimageview = { module = "com.makeramen:roundedimageview", version.ref = "roundedimageview" }
 sdp-android = { module = "com.intuit.sdp:sdp-android", version.ref = "sdpAndroid" }
 ssp-android = { module = "com.intuit.ssp:ssp-android", version.ref = "sspAndroid" }

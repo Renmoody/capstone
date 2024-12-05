@@ -71,4 +71,5 @@
     <string name="repeats">Repeats</string>
     <string name="class_information">Class Information</string>
     <string name="no_classes_added">No classes added</string>
+    <string name="online">Online</string>
 </resources>

@@ -60,6 +60,7 @@
         <activity android:name="com.example.studygo.activities.ActivityAddFriend" />
         <activity android:name="com.example.studygo.activities.ui.messages.GroupMessagesFragment" />
         <activity android:name="com.example.studygo.activities.ActivitySelectClass" />
+        <activity android:name="com.example.studygo.activities.BaseActivity" />
 
     </application>
 

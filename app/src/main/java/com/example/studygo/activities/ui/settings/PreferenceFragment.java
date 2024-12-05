@@ -37,7 +37,43 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         email = findPreference(Constants.KEY_EMAIL);
         username = findPreference(Constants.KEY_NAME);
         password = findPreference(Constants.KEY_PASSWORD);
+
+        if (email != null) {
+            email.setOnPreferenceChangeListener((preference, newValue) -> {
+                String updatedEmail = newValue.toString();
+                // Handle email update logic, e.g., update in Firestore
+                updateUserField(Constants.KEY_EMAIL, updatedEmail);
+                return true;  // Returning true saves the preference
+            });
+        }
+
+        if (username != null) {
+            username.setOnPreferenceChangeListener((preference, newValue) -> {
+                String updatedUsername = newValue.toString();
+                // Handle username update logic, e.g., update in Firestore
+                updateUserField(Constants.KEY_NAME, updatedUsername);
+                return true;  // Returning true saves the preference
+            });
+        }
+
+        if (password != null) {
+            password.setOnPreferenceChangeListener((preference, newValue) -> {
+                String updatedPassword = newValue.toString();
+                // Handle password update logic securely
+                updateUserField(Constants.KEY_PASSWORD, updatedPassword);
+                return true;  // Returning true saves the preference
+            });
+        }
         getUser();
+    }
+
+    private void updateUserField(String key, String update) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(key, update);
+        db.collection(Constants.KEY_COLLECTION_USERS).document(preferenceManager.getString(Constants.KEY_USER_ID)).update(updates)
+                .addOnSuccessListener(v -> Toast.makeText(requireContext(), "Updated", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(v -> Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -59,7 +95,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat {
         }
         if ("delete_account".equals(key)) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("users").document(Constants.KEY_USER_ID).delete().addOnSuccessListener(task -> {
+            db.collection(Constants.KEY_COLLECTION_USERS).document(preferenceManager.getString(Constants.KEY_USER_ID)).delete().addOnSuccessListener(task -> {
                 Toast.makeText(requireContext(), "Account Deleted", Toast.LENGTH_SHORT).show();
                 preferenceManager.clear();
             });

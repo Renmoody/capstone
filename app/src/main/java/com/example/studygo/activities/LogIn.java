@@ -93,6 +93,9 @@ public class LogIn extends AppCompatActivity {
                         preferenceManager.putString(Constants.KEY_NAME, ds.getString(Constants.KEY_NAME));
                         preferenceManager.putString(Constants.KEY_IMAGE, ds.getString(Constants.KEY_IMAGE));
                         preferenceManager.putString(Constants.KEY_ACCOUNT_TYPE, ds.getString(Constants.KEY_ACCOUNT_TYPE));
+                        if (ds.getString(Constants.KEY_MAJOR)!= null) {
+                            preferenceManager.putString(Constants.KEY_MAJOR, ds.getString(Constants.KEY_MAJOR));
+                        }
                         accountType = preferenceManager.getString(Constants.KEY_ACCOUNT_TYPE);
                         launch();
                     } else {

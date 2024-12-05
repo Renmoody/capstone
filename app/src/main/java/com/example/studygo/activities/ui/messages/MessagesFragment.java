@@ -7,8 +7,8 @@ import android.util.Base64;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.studygo.activities.BaseActivity;
 import com.example.studygo.adapters.ChatAdapter;
 import com.example.studygo.databinding.FragmentMessagesBinding;
 import com.example.studygo.models.ChatMessage;
@@ -32,13 +32,16 @@ import java.util.Locale;
 import java.util.Objects;
 
 
-public class MessagesFragment extends AppCompatActivity {
+public class MessagesFragment extends BaseActivity {
 
     private FragmentMessagesBinding binding;
     private User receiverUser;
     private List<ChatMessage> chatMessages;
     private ChatAdapter chatAdapter;
     private String conversionId = null;
+    private Boolean isRecieverAvailable = false;
+
+
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
         if (error != null) {
             return;
@@ -122,6 +125,31 @@ public class MessagesFragment extends AppCompatActivity {
         binding.inputMessage.setText(null);
     }
 
+    private void listenAvailablityOfReciever() {
+        db.collection(Constants.KEY_COLLECTION_USERS).document(
+                receiverUser.id
+        ).addSnapshotListener(MessagesFragment.this, ((value, error) -> {
+            if (error != null) {
+                return;
+            }
+            if (value != null) {
+                if (value.getLong(Constants.KEY_AVAILABILITY) != null) {
+                    int availability = Objects.requireNonNull(
+                                    value.getLong(Constants.KEY_AVAILABILITY))
+                            .intValue();
+                    isRecieverAvailable = availability == 1;
+                }
+            }
+            if (isRecieverAvailable) {
+                binding.textAvailability.setVisibility(View.VISIBLE);
+                binding.imageAvailability.setVisibility(View.VISIBLE);
+            } else {
+                binding.imageAvailability.setVisibility(View.GONE);
+                binding.textAvailability.setVisibility(View.GONE);
+            }
+        }));
+    }
+
     private void listenMessages() {
         db.collection(Constants.KEY_COLLECTION_CHAT)
                 .whereEqualTo(Constants.KEY_SENDER_ID, preferenceManager.getString(Constants.KEY_USER_ID))
@@ -149,7 +177,7 @@ public class MessagesFragment extends AppCompatActivity {
     }
 
     private String getDate(Date date) {
-        return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
+        return new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
     }
 
     private void addConversion(HashMap<String, Object> conversion) {
@@ -194,4 +222,10 @@ public class MessagesFragment extends AppCompatActivity {
             conversionId = ds.getId();
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listenAvailablityOfReciever();
+    }
 }

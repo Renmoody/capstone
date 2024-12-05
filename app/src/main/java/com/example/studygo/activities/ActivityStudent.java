@@ -21,7 +21,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-public class ActivityStudent extends AppCompatActivity {
+public class ActivityStudent extends BaseActivity {
 
     private PreferenceManager preferenceManager;
 

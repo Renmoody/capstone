@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ActivityAddFriend extends AppCompatActivity implements UserListener {
+public class ActivityAddFriend extends BaseActivity implements UserListener {
 
     ActivityAddFriendBinding binding;
     PreferenceManager preferenceManager;

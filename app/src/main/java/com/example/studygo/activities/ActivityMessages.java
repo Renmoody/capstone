@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.studygo.activities.ui.messages.MessagesFragment;
 import com.example.studygo.adapters.RecentConversationsAdapter;
@@ -21,11 +20,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class ActivityMessages extends AppCompatActivity implements ConversionListener {
+public class ActivityMessages extends BaseActivity implements ConversionListener {
 
     private ActivityMessagesBinding binding;
     private PreferenceManager preferenceManager;
@@ -64,7 +62,7 @@ public class ActivityMessages extends AppCompatActivity implements ConversionLis
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
         if (error != null) return;
         if (value != null) {
-            for (DocumentChange documentChange: value.getDocumentChanges()) {
+            for (DocumentChange documentChange : value.getDocumentChanges()) {
                 if (documentChange.getType() == DocumentChange.Type.ADDED) {
                     String senderId = documentChange.getDocument().getString(Constants.KEY_SENDER_ID);
                     String recieverId = documentChange.getDocument().getString(Constants.KEY_RECIEVER_ID);
@@ -102,6 +100,7 @@ public class ActivityMessages extends AppCompatActivity implements ConversionLis
             binding.progressBar.setVisibility(View.GONE);
         }
     };
+
     private void setListeners() {
         binding.imageBack.setOnClickListener(view -> getOnBackPressedDispatcher().onBackPressed());
         binding.fabNewChat.setOnClickListener(view ->

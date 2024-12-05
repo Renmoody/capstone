@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ActivityRequests extends AppCompatActivity implements UserListener {
+public class ActivityRequests extends BaseActivity implements UserListener {
 
     private ActivityRequestsBinding binding;
     private PreferenceManager preferenceManager;

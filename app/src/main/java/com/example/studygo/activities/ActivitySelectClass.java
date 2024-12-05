@@ -32,13 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class ActivitySelectClass extends AppCompatActivity implements StudentClassListener {
+public class ActivitySelectClass extends BaseActivity implements StudentClassListener {
     ActivitySelectClassBinding binding;
     PreferenceManager preferenceManager;
     private String currentClassId;
     private String currentClassName;
     private List<StudentClass> studentClassList;
     private FirebaseFirestore db;
+    private String currentClassCrn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -188,6 +189,7 @@ public class ActivitySelectClass extends AppCompatActivity implements StudentCla
                         DocumentSnapshot ds = task.getResult().getDocuments().get(0);
                         currentClassId = ds.getId();
                         currentClassName = ds.getString(Constants.KEY_CLASS_NAME);
+                        currentClassCrn = ds.getString(Constants.KEY_CRN);
                         Log.d("USER CLICKED", currentClassId);
                         showOptions(studentClass);
                     }
@@ -207,7 +209,8 @@ public class ActivitySelectClass extends AppCompatActivity implements StudentCla
         layout.addView(name);
 
         EditText crn = new EditText(this);
-        name.setHint("CRN");
+        crn.setHint("CRN");
+        crn.setText(currentClassCrn);
         layout.addView(crn);
 
         builder.setNeutralButton("Delete", ((dialogInterface, i) -> deleteClass()));

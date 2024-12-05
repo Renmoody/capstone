@@ -71,4 +71,6 @@ public class Constants {
     public static final String KEY_COLLECTION_CONVERSATIONS = "conversations";
 
     public static final String KEY_MAJOR = "major";
+
+    public static final String KEY_AVAILABILITY = "availability";
 }
