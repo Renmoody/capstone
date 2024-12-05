@@ -26,10 +26,7 @@
         app:key="toggle_notifications"
         app:summary="Enable Notifications"
         app:title="@string/preference_notifications" />
-    <SwitchPreferenceCompat
-        app:key="dark_theme"
-        app:summary="TODO: Implement switching themes"
-        app:title="@string/Theme" />
+
     </PreferenceCategory>
     <!--        app:summaryOff="@string/Switch_to_dark_theme"-->
     <!--        app:summaryOn="@string/Switch_to_light_theme"-->

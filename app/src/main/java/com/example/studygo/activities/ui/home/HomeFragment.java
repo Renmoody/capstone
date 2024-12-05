@@ -33,6 +33,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -149,9 +151,13 @@ public class HomeFragment extends Fragment implements EventListener, AdListener 
                 loading(false);
                 undoErrorMessage();
                 for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                    List<String> groupMembers = (List<String>) queryDocumentSnapshot.get(Constants.KEY_ARRAY_GROUP_MEMBERS);
+                    if (groupMembers != null && groupMembers.contains(preferenceManager.getString(Constants.KEY_USER_ID))) {
+                        continue;
+                    }
 
-                    // Skip private events
-                    if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))) {
+                    if (Constants.KEY_EVENT_ACCESS_PRIVATE.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_ACCESS))
+                            || Objects.equals(queryDocumentSnapshot.get(Constants.KEY_EVENT_AUTHOR_ID), preferenceManager.getString(Constants.KEY_USER_ID))) {
                         continue;
                     }
 
@@ -247,6 +253,7 @@ public class HomeFragment extends Fragment implements EventListener, AdListener 
         binding.textErrorMessage.setText(String.format("%s", "No Events available"));
         binding.textErrorMessage.setVisibility(View.VISIBLE);
     }
+
     private void undoErrorMessage() {
         binding.textErrorMessage.setVisibility(View.INVISIBLE);
     }
@@ -280,6 +287,28 @@ public class HomeFragment extends Fragment implements EventListener, AdListener 
 
     @Override
     public void onAdClicked(Ad ad) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setPositiveButton("Follow?", ((dialogInterface, i) -> followCompany(ad)));
+        builder.setNeutralButton("Cancel", ((dialogInterface, i) -> dialogInterface.cancel()));
+        builder.show();
+    }
 
+    private void followCompany(Ad ad) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Object> update = new HashMap<>();
+        update.put(Constants.KEY_USER_ID, preferenceManager.getString(Constants.KEY_USER_ID));
+        update.put(Constants.KEY_FRIEND_ID, ad.id);
+        db.collection(Constants.KEY_COLLECTION_FRIENDS).add(update)
+                .addOnSuccessListener(t -> {
+                    showToast("Followed!");
+                    int members = Integer.parseInt(ad.members) + 1;
+                    ad.members = String.valueOf(members);
+                    db.collection(Constants.KEY_COLLECTION_ADS).document(ad.id)
+                            .update(Constants.KEY_MEMBERS, members);
+                });
+    }
+
+    private void showToast(String s) {
+        Toast.makeText(requireContext(), s, Toast.LENGTH_SHORT).show();
     }
 }

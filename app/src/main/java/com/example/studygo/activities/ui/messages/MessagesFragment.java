@@ -189,7 +189,7 @@ public class MessagesFragment extends AppCompatActivity {
     }
 
     private final OnCompleteListener<QuerySnapshot> conversionOnCompleteListener = task -> {
-        if (task.isSuccessful() && task.getResult() != null && task.getResult().getDocuments().size() > 0) {
+        if (task.isSuccessful() && task.getResult() != null && !task.getResult().getDocuments().isEmpty()) {
             DocumentSnapshot ds = task.getResult().getDocuments().get(0);
             conversionId = ds.getId();
         }
