@@ -21,11 +21,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.studygo.R;
 import com.example.studygo.activities.ui.messages.GroupMessagesFragment;
-import com.example.studygo.activities.ui.messages.MessagesFragment;
 import com.example.studygo.adapters.EventAdapter;
 import com.example.studygo.databinding.FragmentDashboardBinding;
 import com.example.studygo.listeners.EventListener;
@@ -37,14 +35,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.lang.reflect.Field;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -114,7 +109,7 @@ public class DashboardFragment extends Fragment implements EventListener {
             if (events != null) {
                 for (String event : events) {
                     getEvent(event);
-                    Log.d("EVENTS", event.toString());
+                    Log.d("EVENTS", event);
                 }
             }
         }).addOnCompleteListener(task -> {
@@ -177,7 +172,7 @@ public class DashboardFragment extends Fragment implements EventListener {
 
         final EditText eventTimeInput = new EditText(requireContext());
         eventTimeInput.setHint("Event Time");
-        eventTimeInput.setText(event.time);
+        eventTimeInput.setText(getTime(event.dateObject));
         layout1.addView(eventTimeInput);
 
         final Button timeButton = new Button(requireContext());
@@ -196,6 +191,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         eventDetailsInput.setText(event.details);
         layout.addView(eventDetailsInput);
 
+
         Spinner eventAccessInput = new Spinner(requireContext());
         // Set up the options for the Spinner
         String[] accessOptions = new String[]{"Public", "Private", "Friends Only"};
@@ -204,23 +200,48 @@ public class DashboardFragment extends Fragment implements EventListener {
         eventAccessInput.setAdapter(adapter);
         layout.addView(eventAccessInput);
 
-        builder.setView(layout);
+        Button buttonSave = new Button(requireContext());
+        buttonSave.setText(R.string.save_changes);
+        buttonSave.setOnClickListener(view -> {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("H:m", Locale.getDefault());
+                Date parsedTime = sdf.parse(eventTimeInput.getText().toString());
+                if (parsedTime == null) {
+                    throw new ParseException("Invalid time format", 0);
+                }
+                Calendar originalCalendar = Calendar.getInstance();
+                originalCalendar.setTime(event.dateObject);
 
-        // Save changes
-        builder.setPositiveButton("Save", (dialog, which) -> {
+                Calendar timeCalendar = Calendar.getInstance();
+                timeCalendar.setTime(parsedTime);
+                originalCalendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+                originalCalendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+                Date updatedDate = originalCalendar.getTime();
+
+                event.name = eventNameInput.getText().toString();
+                event.details = eventDetailsInput.getText().toString();
+                event.access = eventAccessInput.getSelectedItem().toString();
+                adapter.notifyDataSetChanged();
+                event.dateObject = updatedDate;
+
+                adapter.notifyDataSetChanged();
+
+            } catch (ParseException e) {
+                Toast.makeText(requireContext(), "Invalid time format. Please use hh:mm a", Toast.LENGTH_SHORT).show();
+            }
             if (eventNameInput.getText().toString().isEmpty() ||
                     eventTimeInput.getText().toString().isEmpty() ||
                     eventDetailsInput.getText().toString().isEmpty()) {
                 Toast.makeText(getContext(), "Please fill out required fields!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            event.name = eventNameInput.getText().toString();
-            event.details = eventDetailsInput.getText().toString();
-            event.time = eventTimeInput.getText().toString();
-            event.access = eventAccessInput.getSelectedItem().toString();
-            adapter.notifyDataSetChanged();
+
+            Toast.makeText(requireContext(), "Update complete", Toast.LENGTH_SHORT).show();
             updateEvent(event);
         });
+        layout.addView(buttonSave);
+        builder.setView(layout);
+
         builder.setPositiveButton("Chat", ((dialogInterface, i) -> startGroupChat(event)));
         builder.setNeutralButton("Delete", (dialog, which) -> deleteEvent(event));
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -240,6 +261,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         updates.put(Constants.KEY_EVENT_ACCESS, event.access);
         updates.put(Constants.KEY_EVENT_DETAILS, event.details);
         updates.put(Constants.KEY_EVENT_NAME, event.name);
+        updates.put(Constants.KEY_EVENT_DATE, event.dateObject);
         db.collection(Constants.KEY_COLLECTION_EVENTS).document(event.id).update(updates);
     }
 
@@ -305,7 +327,7 @@ public class DashboardFragment extends Fragment implements EventListener {
         db.collection(Constants.KEY_COLLECTION_EVENTS)
                 .document(event.id)
                 .update(Constants.KEY_ARRAY_GROUP_MEMBERS,
-                FieldValue.arrayRemove(preferenceManager.getString(Constants.KEY_USER_ID)));
+                        FieldValue.arrayRemove(preferenceManager.getString(Constants.KEY_USER_ID)));
 
     }
 
@@ -322,6 +344,10 @@ public class DashboardFragment extends Fragment implements EventListener {
 
     private String getDate(Date date) {
         return new SimpleDateFormat("MMMM dd, yy - hh:mm a", Locale.getDefault()).format(date);
+    }
+
+    private String getTime(Date date) {
+        return new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
     }
 
     private void undoErrorMessage() {
@@ -342,8 +368,7 @@ public class DashboardFragment extends Fragment implements EventListener {
                     db.collection(Constants.KEY_COLLECTION_USERS)
                             .document(preferenceManager.getString(Constants.KEY_USER_ID))
                             .update(Constants.KEY_ARRAY_REGISTERED_EVENTS, FieldValue.arrayRemove(event.id));
-                    Toast.makeText(requireContext(),"Event Deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Event Deleted", Toast.LENGTH_SHORT).show();
                 });
     }
-
 }
